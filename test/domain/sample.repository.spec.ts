@@ -52,224 +52,320 @@ describe('SampleRepository', () => {
     await module.get(DataSource).destroy();
   });
 
-  it('기본 repository 메서드(find, save) 정상 작동', async () => {
-    // given
-    const sample = new Sample({
-      text: 'hello',
+  // TODO:
+  describe('BaseRepository', () => {
+    it('기본 repository 메서드(find, save) 정상 작동', async () => {
+      // given
+      const sample = new Sample({
+        text: 'hello',
+      });
+
+      // when
+      const result = await sampleRepository.save(sample);
+
+      // then
+      expect(result.id).toBe(1);
+      expect(result.text).toBe('hello');
+
+      const samples = await sampleRepository.find();
+      expect(samples).toHaveLength(1);
     });
 
-    // when
-    const result = await sampleRepository.save(sample);
+    it('기본 레포지토리 확장 메서드', async () => {
+      // given
+      const sample1 = new Sample({
+        text: 'real sample1',
+      });
+      const sample2 = new Sample({
+        text: 'real sample2',
+      });
+      const sample3 = new Sample({
+        text: 'fake sample1',
+      });
+      await sampleRepository.save([sample1, sample2, sample3]);
 
-    // then
-    expect(result.id).toBe(1);
-    expect(result.text).toBe('hello');
+      // when
+      const result = await sampleRepository.findContainsText('real');
 
-    const samples = await sampleRepository.find();
-    expect(samples).toHaveLength(1);
+      // then
+      expect(result).toHaveLength(2);
+    });
   });
 
-  it('Entity<->DB LocalDateTimeColumn 변환', async () => {
-    // given
-    const sample = new Sample({
-      text: 'hello',
+  describe('LocalDateTimeColumn', () => {
+    it('Entity<->DB', async () => {
+      // given
+      const sample = new Sample({
+        text: 'hello',
+      });
+
+      // when
+      const result = await sampleRepository.save(sample);
+
+      // then
+      expect(result.checkedAt).toBeNull();
+      expect(result.createdAt).toBeInstanceOf(LocalDateTime);
+      expect(result.updatedAt).toBeInstanceOf(LocalDateTime);
+      expect(result.deletedAt).toBeNull();
     });
 
-    // when
-    const result = await sampleRepository.save(sample);
+    describe('updatedAt은', () => {
+      it('save 메서드로 갱신된다', async () => {
+        // given
+        const sample = new Sample({
+          text: 'hello',
+        });
 
-    // then
-    expect(result.checkedAt).toBeNull();
-    expect(result.createdAt).toBeInstanceOf(LocalDateTime);
-    expect(result.updatedAt).toBeInstanceOf(LocalDateTime);
-    expect(result.deletedAt).toBeNull();
-  });
+        // when
+        const result1 = await sampleRepository.save(sample);
+        await TestUtil.sleep(100);
+        const result2 = await sampleRepository.save(result1);
 
-  it('기본 레포지토리 확장 메서드', async () => {
-    // given
-    const sample1 = new Sample({
-      text: 'real sample1',
-    });
-    const sample2 = new Sample({
-      text: 'real sample2',
-    });
-    const sample3 = new Sample({
-      text: 'fake sample1',
-    });
-    await sampleRepository.save([sample1, sample2, sample3]);
+        // then
+        expect(result2.checkedAt).toBeNull();
+        expect(
+          result2.createdAt.until(result2.updatedAt, ChronoUnit.MILLIS) >= 100,
+        ).toBe(true);
+        expect(result2.deletedAt).toBeNull();
+      });
 
-    // when
-    const result = await sampleRepository.findContainsText('real');
+      it('update 메서드에 인스턴스를 인수로 넘겼을 때 갱신된다', async () => {
+        // given
+        const sample = new Sample({
+          text: 'hello',
+        });
 
-    // then
-    expect(result).toHaveLength(2);
-  });
+        // when
+        const saved = await sampleRepository.save(sample);
 
-  it('updatedAt는 save 메서드로 갱신된다', async () => {
-    // given
-    const sample = new Sample({
-      text: 'hello',
-    });
+        await TestUtil.sleep(100);
+        await sampleRepository.update({ id: saved.id }, saved); // NOTE: partialEntity 파라미터에 인스턴스가 아닌 json을 넣으면 당연히 @BeforeUpdate 동작X
+        const [result] = await sampleRepository.find();
 
-    // when
-    const result1 = await sampleRepository.save(sample);
-    await TestUtil.sleep(2000);
-    const result2 = await sampleRepository.save(result1);
-
-    // then
-    expect(result2.checkedAt).toBeNull();
-    expect(
-      result2.createdAt.until(result2.updatedAt, ChronoUnit.SECONDS) >= 2,
-    ).toBe(true);
-    expect(result2.deletedAt).toBeNull();
-  });
-
-  it('updatedAt은 update 메서드에 인스턴스를 인자로 사용했을 때는 갱신된다', async () => {
-    // given
-    const sample = new Sample({
-      text: 'hello',
+        // then
+        expect(result.checkedAt).toBeNull();
+        expect(
+          result.createdAt.until(result.updatedAt, ChronoUnit.MILLIS) >= 100,
+        ).toBe(true);
+        expect(result.deletedAt).toBeNull();
+      });
     });
 
-    // when
-    const saved = await sampleRepository.save(sample);
-    await TestUtil.sleep(2000);
+    describe('find 메서드와 FindOperator', () => {
+      const createFixture = async () => {
+        const sample1 = new Sample({
+          text: 'sample1',
+          checkedAt: LocalDateTime.of(2023, 7, 4, 23, 59, 59),
+        });
+        const sample2 = new Sample({
+          text: 'sample2',
+          checkedAt: LocalDateTime.of(2023, 7, 5, 0, 0, 0),
+        });
+        const sample3 = new Sample({
+          text: 'sample3',
+          checkedAt: LocalDateTime.of(2023, 7, 5, 23, 59, 59),
+        });
+        const sample4 = new Sample({
+          text: 'sample4',
+          checkedAt: LocalDateTime.of(2023, 7, 6, 0, 0, 0),
+        });
+        const sample5 = new Sample({
+          text: 'sample5',
+        });
+        await sampleRepository.save([
+          sample1,
+          sample2,
+          sample3,
+          sample4,
+          sample5,
+        ]);
+      };
 
-    await sampleRepository.update({ id: saved.id }, saved); // NOTE: partialEntity 파라미터에 인스턴스가 아닌 json을 넣으면 당연히 @BeforeUpdate 동작X
-    const [result] = await sampleRepository.find();
+      it('equal', async () => {
+        // given
+        await createFixture();
 
-    // then
-    expect(result.checkedAt).toBeNull();
-    expect(
-      result.createdAt.until(result.updatedAt, ChronoUnit.SECONDS) >= 2,
-    ).toBe(true);
-    expect(result.deletedAt).toBeNull();
-  });
+        // when
+        const result = await sampleRepository.find({
+          where: {
+            checkedAt: Equal(LocalDateTime.of(2023, 7, 5, 0, 0, 0)),
+          },
+        });
+        // then
+        expect(result).toHaveLength(1);
+      });
 
-  it('find 메서드와 FindOperator로 LocalDateTimeColumn 조회', async () => {
-    // given
-    const sample1 = new Sample({
-      text: 'sample1',
-      checkedAt: LocalDateTime.of(2023, 7, 4, 23, 59, 59),
-    });
-    const sample2 = new Sample({
-      text: 'sample2',
-      checkedAt: LocalDateTime.of(2023, 7, 5, 0, 0, 0),
-    });
-    const sample3 = new Sample({
-      text: 'sample3',
-      checkedAt: LocalDateTime.of(2023, 7, 5, 23, 59, 59),
-    });
-    const sample4 = new Sample({
-      text: 'sample4',
-      checkedAt: LocalDateTime.of(2023, 7, 6, 0, 0, 0),
-    });
-    const sample5 = new Sample({
-      text: 'sample5',
-    });
-    await sampleRepository.save([sample1, sample2, sample3, sample4, sample5]);
+      it('between', async () => {
+        // given
+        await createFixture();
 
-    // when
-    const equalResults = await sampleRepository.find({
-      where: {
-        checkedAt: Equal(LocalDateTime.of(2023, 7, 5, 0, 0, 0)),
-      },
-    });
-    const betweenResults = await sampleRepository.find({
-      where: {
-        checkedAt: Between(
-          LocalDateTime.of(2023, 7, 5, 0, 0, 0),
-          LocalDateTime.of(2023, 7, 5, 23, 59, 59),
-        ),
-      },
-    });
-    const notBetweenResults = await sampleRepository.find({
-      where: {
-        checkedAt: Not(
-          Between(
-            LocalDateTime.of(2023, 7, 5, 0, 0, 0),
-            LocalDateTime.of(2023, 7, 5, 23, 59, 59),
-          ),
-        ),
-      },
-    });
-    const andResults = await sampleRepository.find({
-      where: {
-        checkedAt: And(
-          MoreThanOrEqual(LocalDateTime.of(2023, 7, 5, 0, 0, 0)),
-          LessThanOrEqual(LocalDateTime.of(2023, 7, 5, 23, 59, 59)),
-        ),
-      },
-    });
-    const nullResults = await sampleRepository.find({
-      where: {
-        checkedAt: IsNull(),
-      },
-    });
-    const notNullResults = await sampleRepository.find({
-      where: {
-        checkedAt: Not(IsNull()),
-      },
+        // when
+        const result = await sampleRepository.find({
+          where: {
+            checkedAt: Between(
+              LocalDateTime.of(2023, 7, 5, 0, 0, 0),
+              LocalDateTime.of(2023, 7, 5, 23, 59, 59),
+            ),
+          },
+        });
+
+        // then
+        expect(result).toHaveLength(2);
+      });
+
+      it('not between', async () => {
+        // given
+        await createFixture();
+
+        // when
+        const result = await sampleRepository.find({
+          where: {
+            checkedAt: Not(
+              Between(
+                LocalDateTime.of(2023, 7, 5, 0, 0, 0),
+                LocalDateTime.of(2023, 7, 5, 23, 59, 59),
+              ),
+            ),
+          },
+        });
+
+        // then
+        expect(result).toHaveLength(2);
+      });
+
+      it('and', async () => {
+        // given
+        await createFixture();
+
+        // when
+        const result = await sampleRepository.find({
+          where: {
+            checkedAt: And(
+              MoreThanOrEqual(LocalDateTime.of(2023, 7, 5, 0, 0, 0)),
+              LessThanOrEqual(LocalDateTime.of(2023, 7, 5, 23, 59, 59)),
+            ),
+          },
+        });
+
+        // then
+        expect(result).toHaveLength(2);
+      });
+
+      it('null', async () => {
+        // given
+        await createFixture();
+
+        // when
+        const result = await sampleRepository.find({
+          where: {
+            checkedAt: IsNull(),
+          },
+        });
+
+        // then
+        expect(result).toHaveLength(1);
+      });
+
+      it('not null', async () => {
+        // given
+        await createFixture();
+
+        // when
+        const result = await sampleRepository.find({
+          where: {
+            checkedAt: Not(IsNull()),
+          },
+        });
+
+        // then
+        expect(result).toHaveLength(4);
+      });
+
+      // TODO: not and, not equal
     });
 
-    // then
-    expect(equalResults).toHaveLength(1);
-    expect(betweenResults).toHaveLength(2);
-    expect(notBetweenResults).toHaveLength(2);
-    expect(andResults).toHaveLength(2);
-    expect(nullResults).toHaveLength(1);
-    expect(notNullResults).toHaveLength(4);
-  });
+    describe('QueryBuilder', () => {
+      // given
+      const createFixture = async () => {
+        const sample1 = new Sample({
+          text: 'sample1',
+          checkedAt: LocalDateTime.of(2023, 7, 4, 23, 59, 59),
+        });
+        const sample2 = new Sample({
+          text: 'sample2',
+          checkedAt: LocalDateTime.of(2023, 7, 5, 0, 0, 0),
+        });
+        const sample3 = new Sample({
+          text: 'sample3',
+          checkedAt: LocalDateTime.of(2023, 7, 5, 23, 59, 59),
+        });
+        const sample4 = new Sample({
+          text: 'sample4',
+          checkedAt: LocalDateTime.of(2023, 7, 6, 0, 0, 0),
+        });
+        const sample5 = new Sample({
+          text: 'sample5',
+        });
+        await sampleRepository.save([
+          sample1,
+          sample2,
+          sample3,
+          sample4,
+          sample5,
+        ]);
+      };
 
-  it('QueryBuilder로 LocalDateTimeColumn 조회', async () => {
-    // given
-    const sample1 = new Sample({
-      text: 'sample1',
-      checkedAt: LocalDateTime.of(2023, 7, 4, 23, 59, 59),
-    });
-    const sample2 = new Sample({
-      text: 'sample2',
-      checkedAt: LocalDateTime.of(2023, 7, 5, 0, 0, 0),
-    });
-    const sample3 = new Sample({
-      text: 'sample3',
-      checkedAt: LocalDateTime.of(2023, 7, 5, 23, 59, 59),
-    });
-    const sample4 = new Sample({
-      text: 'sample4',
-      checkedAt: LocalDateTime.of(2023, 7, 6, 0, 0, 0),
-    });
-    const sample5 = new Sample({
-      text: 'sample5',
-    });
-    await sampleRepository.save([sample1, sample2, sample3, sample4, sample5]);
+      it('equal', async () => {
+        // given
+        await createFixture();
 
-    // when
-    const equalResults = await sampleRepository
-      .createQueryBuilder()
-      .where({
-        checkedAt: LocalDateTime.of(2023, 7, 5, 0, 0, 0),
-      })
-      .getMany();
-    const betweenResults = await sampleRepository
-      .createQueryBuilder()
-      .where({
-        checkedAt: Between(
-          LocalDateTime.of(2023, 7, 5, 0, 0, 0),
-          LocalDateTime.of(2023, 7, 5, 23, 59, 59),
-        ),
-      })
-      .getMany();
-    const betweenWithParamterResults = await sampleRepository
-      .createQueryBuilder('sample')
-      .where(`sample.checked_at BETWEEN :from AND :to`, {
-        from: LocalDateTime.of(2023, 7, 5, 0, 0, 0),
-        to: LocalDateTime.of(2023, 7, 5, 23, 59, 59),
-      })
-      .getMany();
+        // when
+        const result = await sampleRepository
+          .createQueryBuilder()
+          .where({
+            checkedAt: LocalDateTime.of(2023, 7, 5, 0, 0, 0),
+          })
+          .getMany();
 
-    // then
-    expect(equalResults).toHaveLength(1);
-    expect(betweenResults).toHaveLength(2);
-    expect(betweenWithParamterResults).toHaveLength(2);
+        // then
+        expect(result).toHaveLength(1);
+      });
+
+      it('between', async () => {
+        // given
+        await createFixture();
+
+        // when
+        const result = await sampleRepository
+          .createQueryBuilder()
+          .where({
+            checkedAt: Between(
+              LocalDateTime.of(2023, 7, 5, 0, 0, 0),
+              LocalDateTime.of(2023, 7, 5, 23, 59, 59),
+            ),
+          })
+          .getMany();
+
+        // then
+        expect(result).toHaveLength(2);
+      });
+
+      it('between with parameter', async () => {
+        // given
+        await createFixture();
+
+        // when
+        const result = await sampleRepository
+          .createQueryBuilder('sample')
+          .where(`sample.checked_at BETWEEN :from AND :to`, {
+            from: LocalDateTime.of(2023, 7, 5, 0, 0, 0),
+            to: LocalDateTime.of(2023, 7, 5, 23, 59, 59),
+          })
+          .getMany();
+
+        // then
+        expect(result).toHaveLength(2);
+      });
+    });
   });
 });
