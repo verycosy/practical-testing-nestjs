@@ -7,6 +7,7 @@ import {
   Between,
   DataSource,
   Equal,
+  In,
   IsNull,
   LessThanOrEqual,
   MoreThanOrEqual,
@@ -15,6 +16,7 @@ import {
 import { LocalDateTime } from '@js-joda/core';
 import { CoreModule } from 'src/core.module';
 import { DateTimeUtil } from 'src/util/date-time-util';
+import { SampleStatus } from './sample-status';
 
 describe('SampleRepository', () => {
   let sampleRepository: SampleRepository;
@@ -330,5 +332,213 @@ describe('SampleRepository', () => {
       // then
       expect(result).toHaveLength(2);
     });
+  });
+
+  describe('ClassEnumColumn', () => {
+    it('Entity<->DB', async () => {
+      // given / when
+      const sample = new Sample({
+        text: 'hello',
+        status: SampleStatus.DONE,
+      });
+      const result = await sampleRepository.save(sample);
+
+      // then
+      expect(result.status).toBe(SampleStatus.DONE);
+    });
+
+    describe('find 메서드로 조회', () => {
+      it('equal', async () => {
+        // given
+        await createFixture();
+
+        // when
+        const result = await sampleRepository.find({
+          where: {
+            status: SampleStatus.READY,
+          },
+        });
+
+        // then
+        expect(result).toHaveLength(1);
+      });
+
+      it('or', async () => {
+        // given
+        await createFixture();
+
+        // when
+        const result = await sampleRepository.find({
+          where: [
+            {
+              status: SampleStatus.READY,
+            },
+            {
+              status: SampleStatus.PROGRESS,
+            },
+          ],
+        });
+
+        // then
+        expect(result).toHaveLength(3);
+      });
+
+      it('in', async () => {
+        // given
+        await createFixture();
+
+        // when
+        const result = await sampleRepository.find({
+          where: {
+            status: In([SampleStatus.READY, SampleStatus.DONE]),
+          },
+        });
+
+        // then
+        expect(result).toHaveLength(4);
+      });
+
+      it('not', async () => {
+        // given
+        await createFixture();
+
+        // when
+        const result = await sampleRepository.find({
+          where: {
+            status: Not(SampleStatus.DONE),
+          },
+        });
+
+        // then
+        expect(result).toHaveLength(3);
+      });
+
+      it('not and', async () => {
+        // given
+        await createFixture();
+
+        // when
+        const result = await sampleRepository.find({
+          where: {
+            status: And(Not(SampleStatus.READY), Equal(SampleStatus.PROGRESS)),
+          },
+        });
+
+        // then
+        expect(result).toHaveLength(2);
+      });
+
+      it('not is null', async () => {
+        // given
+        await createFixture();
+
+        // when
+        const notIsNullResults = await sampleRepository.find({
+          where: {
+            status: Not(IsNull()),
+          },
+        });
+
+        // then
+        expect(notIsNullResults).toHaveLength(6);
+      });
+    });
+
+    describe('QueryBuilder', () => {
+      it('equal', async () => {
+        // given
+        await createFixture();
+
+        // when
+        const result = await sampleRepository
+          .createQueryBuilder('sample')
+          .where({
+            status: SampleStatus.READY,
+          })
+          .getMany();
+
+        // then
+        expect(result).toHaveLength(1);
+      });
+
+      it('in', async () => {
+        // given
+        await createFixture();
+
+        // when
+        const result = await sampleRepository
+          .createQueryBuilder('sample')
+          .where([
+            {
+              status: In([SampleStatus.READY, SampleStatus.PROGRESS]),
+            },
+          ])
+          .getMany();
+
+        // then
+        expect(result).toHaveLength(3);
+      });
+
+      it('or', async () => {
+        // given
+        await createFixture();
+
+        // when
+        const result1 = await sampleRepository
+          .createQueryBuilder('sample')
+          .where([
+            {
+              status: SampleStatus.READY,
+            },
+            {
+              status: SampleStatus.PROGRESS,
+            },
+          ])
+          .getMany();
+
+        const result2 = await sampleRepository
+          .createQueryBuilder('sample')
+          .where(`(sample.status = :status1 OR sample.status = :status2)`, {
+            status1: SampleStatus.READY.code,
+            status2: SampleStatus.PROGRESS.code,
+          })
+          .getMany();
+
+        // getsql도 심지어 같은 동작
+
+        // then
+        expect(result1).toHaveLength(3);
+        expect(result2).toHaveLength(3);
+      });
+    });
+
+    const createFixture = async () => {
+      const sample1 = new Sample({
+        text: 'sample1',
+        status: SampleStatus.READY,
+      });
+      const sample2 = new Sample({
+        text: 'sample2',
+        status: SampleStatus.PROGRESS,
+      });
+      const sample3 = new Sample({
+        text: 'sample3',
+        status: SampleStatus.PROGRESS,
+      });
+      const sample4 = new Sample({
+        text: 'sample4',
+        status: SampleStatus.DONE,
+      });
+      const sample5 = new Sample({
+        text: 'sample5',
+        status: SampleStatus.DONE,
+      });
+      const sample6 = new Sample({
+        text: 'sample5',
+        status: SampleStatus.DONE,
+      });
+      const samples = [sample1, sample2, sample3, sample4, sample5, sample6];
+      await sampleRepository.save(samples);
+    };
   });
 });
