@@ -7,10 +7,15 @@ import { newDb } from 'pg-mem';
 import { join } from 'path';
 import { ProductRepository } from './entity/domain/product/product.repository';
 import { StockRepository } from './entity/domain/stock/stock.repository';
+import { MailSendHistoryRepository } from './entity/domain/history/mail/mail-send-history.repository';
 
 type NODE_ENV = 'test' | 'local' | 'production';
 
-const repositories = [ProductRepository, StockRepository];
+const repositories = [
+  ProductRepository,
+  StockRepository,
+  MailSendHistoryRepository,
+];
 
 @Global()
 @Module({
