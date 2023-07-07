@@ -5,8 +5,12 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { newDb } from 'pg-mem';
 import { join } from 'path';
+import { ProductRepository } from './entity/domain/product/product.repository';
+import { StockRepository } from './entity/domain/stock/stock.repository';
 
 type NODE_ENV = 'test' | 'local' | 'production';
+
+const repositories = [ProductRepository, StockRepository];
 
 @Global()
 @Module({
@@ -42,6 +46,8 @@ type NODE_ENV = 'test' | 'local' | 'production';
       },
     }),
   ],
+  providers: repositories,
+  exports: repositories,
 })
 export class DBModule {
   private static async createInMemoryDataSource(options: DataSourceOptions) {
