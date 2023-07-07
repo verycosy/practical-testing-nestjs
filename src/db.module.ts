@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource, DataSourceOptions } from 'typeorm';
@@ -8,6 +8,7 @@ import { join } from 'path';
 
 type NODE_ENV = 'test' | 'local' | 'production';
 
+@Global()
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
