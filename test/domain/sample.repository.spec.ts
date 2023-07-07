@@ -14,6 +14,7 @@ import {
 } from 'typeorm';
 import { LocalDateTime } from '@js-joda/core';
 import { CoreModule } from 'src/core.module';
+import { DateTimeUtil } from 'src/util/date-time-util';
 
 describe('SampleRepository', () => {
   let sampleRepository: SampleRepository;
@@ -134,8 +135,24 @@ describe('SampleRepository', () => {
           checkedAt: Equal(LocalDateTime.of(2023, 7, 5, 0, 0, 0)),
         },
       });
+
       // then
       expect(result).toHaveLength(1);
+    });
+
+    it('more than equal', async () => {
+      // given
+      await createFixture();
+
+      // when
+      const result = await sampleRepository.find({
+        where: {
+          checkedAt: MoreThanOrEqual(LocalDateTime.of(2023, 7, 5, 0, 0, 0)),
+        },
+      });
+
+      // then
+      expect(result).toHaveLength(3);
     });
 
     it('between', async () => {
@@ -258,15 +275,17 @@ describe('SampleRepository', () => {
       ]);
     };
 
+    // NOTE: 이건 사실상 내부적으로는 Equal(checkedAt)을 넣은 것과 같아서, FindOperator를 쓴 것과 다름 없다
     it('equal', async () => {
       // given
       await createFixture();
+      const checkedAt = LocalDateTime.of(2023, 7, 5, 0, 0, 0);
 
       // when
       const result = await sampleRepository
         .createQueryBuilder()
         .where({
-          checkedAt: LocalDateTime.of(2023, 7, 5, 0, 0, 0),
+          checkedAt,
         })
         .getMany();
 
@@ -296,13 +315,15 @@ describe('SampleRepository', () => {
     it('between with parameter', async () => {
       // given
       await createFixture();
+      const from = DateTimeUtil.toDate(LocalDateTime.of(2023, 7, 5, 0, 0, 0));
+      const to = DateTimeUtil.toDate(LocalDateTime.of(2023, 7, 5, 23, 59, 59));
 
       // when
       const result = await sampleRepository
         .createQueryBuilder('sample')
         .where(`sample.checked_at BETWEEN :from AND :to`, {
-          from: LocalDateTime.of(2023, 7, 5, 0, 0, 0),
-          to: LocalDateTime.of(2023, 7, 5, 23, 59, 59),
+          from,
+          to,
         })
         .getMany();
 
