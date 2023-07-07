@@ -1,4 +1,4 @@
-import { CodeName } from 'src/domain/code-name';
+import { CodeName } from 'src/entity/code-name';
 import { Enum, EnumType } from 'ts-jenum';
 
 @Enum('code')

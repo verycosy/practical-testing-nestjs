@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource, Entity, Repository } from 'typeorm';
-import { BaseTimeEntity } from 'src/domain/base-time-entity';
+import { BaseTimeEntity } from 'src/entity/base-time-entity';
 import { ChronoUnit } from '@js-joda/core';
 import { Injectable } from '@nestjs/common';
 import { TestUtil } from '../util/test-util';

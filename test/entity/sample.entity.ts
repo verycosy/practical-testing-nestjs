@@ -1,7 +1,7 @@
 import { LocalDateTime } from '@js-joda/core';
-import { BaseTimeEntity } from 'src/domain/base-time-entity';
-import { LocalDateTimeColumn } from 'src/domain/columns/local-date-time.column';
-import { ClassEnumColumn } from 'src/domain/columns/class-enum.column';
+import { BaseTimeEntity } from 'src/entity/base-time-entity';
+import { LocalDateTimeColumn } from 'src/entity/columns/local-date-time.column';
+import { ClassEnumColumn } from 'src/entity/columns/class-enum.column';
 import { Column, Entity } from 'typeorm';
 import { SampleStatus } from './sample-status';
 
