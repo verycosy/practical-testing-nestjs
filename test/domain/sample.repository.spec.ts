@@ -13,7 +13,7 @@ import {
   Not,
 } from 'typeorm';
 import { LocalDateTime } from '@js-joda/core';
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { CoreModule } from 'src/core.module';
 
 describe('SampleRepository', () => {
   let sampleRepository: SampleRepository;
@@ -21,22 +21,7 @@ describe('SampleRepository', () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          host: 'localhost',
-          port: 5432,
-          username: 'test',
-          password: 'test',
-          database: 'test',
-          entities: [Sample],
-          synchronize: true,
-          dropSchema: true,
-          logging: true,
-          entitySkipConstructor: true,
-          namingStrategy: new SnakeNamingStrategy(),
-        }),
-      ],
+      imports: [CoreModule, TypeOrmModule.forFeature([Sample])],
       providers: [SampleRepository],
     }).compile();
 

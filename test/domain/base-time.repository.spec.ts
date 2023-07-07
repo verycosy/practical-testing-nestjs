@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource, Entity, Repository } from 'typeorm';
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { BaseTimeEntity } from 'src/domain/base-time-entity';
 import { ChronoUnit } from '@js-joda/core';
 import { Injectable } from '@nestjs/common';
 import { TestUtil } from '../test-util';
+import { CoreModule } from 'src/core.module';
 
 @Entity()
 class TestEntity extends BaseTimeEntity {}
@@ -23,22 +23,7 @@ describe('BaseTimeEntity 동작 확인', () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          host: 'localhost',
-          port: 5432,
-          username: 'test',
-          password: 'test',
-          database: 'test',
-          entities: [TestEntity],
-          synchronize: true,
-          dropSchema: true,
-          logging: true,
-          entitySkipConstructor: true,
-          namingStrategy: new SnakeNamingStrategy(),
-        }),
-      ],
+      imports: [CoreModule, TypeOrmModule.forFeature([TestEntity])],
       providers: [TestRepository],
     }).compile();
 
