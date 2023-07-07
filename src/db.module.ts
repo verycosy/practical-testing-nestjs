@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { newDb } from 'pg-mem';
+import { join } from 'path';
 
 type NODE_ENV = 'test' | 'local' | 'production';
 
@@ -27,6 +28,7 @@ type NODE_ENV = 'test' | 'local' | 'production';
           dropSchema: false,
           logging: true,
           synchronize: env === 'test',
+          entities: [join(__dirname, '/**/*.entity{.ts,.js}')],
         };
       },
       dataSourceFactory: async (options: DataSourceOptions) => {
