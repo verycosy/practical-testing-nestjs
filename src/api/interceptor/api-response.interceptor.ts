@@ -4,6 +4,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  Logger,
   NestInterceptor,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -19,6 +20,8 @@ export interface ApiResponse<T> {
 export class ApiResponseInterceptor<T>
   implements NestInterceptor<T, ApiResponse<T>>
 {
+  private readonly logger = new Logger(ApiResponseInterceptor.name);
+
   static getStatusCodeAndMessageFromError(err: Error) {
     const { message } = err;
     const statusCode =
@@ -42,6 +45,8 @@ export class ApiResponseInterceptor<T>
         data,
       })),
       catchError((err: Error) => {
+        this.logger.error(err, err.stack);
+
         const { statusCode, message } =
           ApiResponseInterceptor.getStatusCodeAndMessageFromError(err);
         response.status(statusCode);
