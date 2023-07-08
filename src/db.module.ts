@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DataSource, DataSourceOptions } from 'typeorm';
@@ -8,17 +8,16 @@ import { join } from 'path';
 import { ProductRepository } from './entity/domain/product/product.repository';
 import { StockRepository } from './entity/domain/stock/stock.repository';
 import { MailSendHistoryRepository } from './entity/domain/history/mail/mail-send-history.repository';
+import {
+  addTransactionalDataSource,
+  deleteDataSourceByName,
+  initializeTransactionalContext,
+} from 'typeorm-transactional';
 
 type NODE_ENV = 'test' | 'local' | 'production';
 interface TestEnvOption {
   isTestEnv: boolean;
 }
-
-const repositories = [
-  ProductRepository,
-  StockRepository,
-  MailSendHistoryRepository,
-];
 
 @Global()
 @Module({
@@ -53,18 +52,19 @@ const repositories = [
         ...options
       }: DataSourceOptions & TestEnvOption) => {
         const dataSource = isTestEnv
-          ? await DBModule.createInMemoryDataSource(options)
+          ? DBModule.createInMemoryDataSource(options)
           : new DataSource(options);
+
+        deleteDataSourceByName('default');
+        addTransactionalDataSource(dataSource);
 
         return await dataSource.initialize();
       },
     }),
   ],
-  providers: repositories,
-  exports: repositories,
 })
 export class DBModule {
-  private static async createInMemoryDataSource(options: DataSourceOptions) {
+  private static createInMemoryDataSource(options: DataSourceOptions) {
     const db = newDb();
     db.public
       .registerFunction({
@@ -76,6 +76,22 @@ export class DBModule {
         implementation: () => 'current_database',
       });
 
-    return await db.adapters.createTypeormDataSource(options);
+    return db.adapters.createTypeormDataSource(options);
+  }
+
+  static forRoot(): DynamicModule {
+    initializeTransactionalContext();
+
+    const repositories = [
+      ProductRepository,
+      StockRepository,
+      MailSendHistoryRepository,
+    ];
+
+    return {
+      module: DBModule,
+      providers: repositories,
+      exports: repositories,
+    };
   }
 }

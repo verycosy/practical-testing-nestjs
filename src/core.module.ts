@@ -7,7 +7,7 @@ import { DBModule } from './db.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    DBModule,
+    DBModule.forRoot(),
   ],
 })
 export class CoreModule {}
