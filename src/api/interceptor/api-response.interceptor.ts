@@ -10,9 +10,13 @@ import {
 import { Response } from 'express';
 import { Observable, catchError, map, of } from 'rxjs';
 
-export interface ApiResponse<T> {
+interface HttpExceptionResponse {
+  message: string | string[];
+  error: string;
   statusCode: number;
-  message: string;
+}
+
+export interface ApiResponse<T> extends Omit<HttpExceptionResponse, 'error'> {
   data: T | null;
 }
 
@@ -23,13 +27,14 @@ export class ApiResponseInterceptor<T>
   private readonly logger = new Logger(ApiResponseInterceptor.name);
 
   static getStatusCodeAndMessageFromError(err: Error) {
-    const { message } = err;
-    const statusCode =
-      err instanceof HttpException
-        ? err.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
+    if (err instanceof HttpException) {
+      return err.getResponse() as HttpExceptionResponse;
+    }
 
-    return { message, statusCode };
+    return {
+      message: err.message,
+      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+    };
   }
 
   intercept(
