@@ -1,66 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  BadGatewayException,
-  Body,
-  Controller,
-  Get,
-  INestApplication,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { CoreModule } from 'src/core.module';
 import { ApiSetupModule } from 'src/api-setup.module';
-import { IsPositive, IsString } from 'class-validator';
+import { TestController } from './test.controller';
 
-class TestException extends Error {}
-
-class TestRequest {
-  @IsString({ message: '이름은 문자열이어야 합니다.' })
-  name: string;
-
-  @IsPositive({
-    message: ({ property, value }) => {
-      return `나이(${property})는 양수이어야 합니다. (입력값 : ${value})`;
-    },
-  })
-  age: number;
-}
-
-@Controller()
-class TestController {
-  @Get('/success')
-  getSuccess() {
-    return 'Hello World!';
-  }
-
-  @Post('/success')
-  postSuccess() {
-    return 'Hello World!';
-  }
-
-  @Get('/custom-exception')
-  customException() {
-    throw new TestException('Something wrong');
-  }
-
-  @Get('/http-exception')
-  httpException() {
-    throw new BadGatewayException('Just test');
-  }
-
-  @Get('/validation')
-  queryValidation(@Query() query: TestRequest) {
-    return query;
-  }
-
-  @Post('/validation')
-  bodyValidation(@Body() body: TestRequest) {
-    return body;
-  }
-}
-
-describe('TestController (e2e)', () => {
+describe('ApiSetup (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
