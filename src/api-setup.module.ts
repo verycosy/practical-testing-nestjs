@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { Module, ValidationPipe } from '@nestjs/common';
+import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ApiResponseInterceptor } from './api/interceptor/api-response.interceptor';
 
 @Module({
@@ -7,6 +7,15 @@ import { ApiResponseInterceptor } from './api/interceptor/api-response.intercept
     {
       provide: APP_INTERCEPTOR,
       useClass: ApiResponseInterceptor,
+    },
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({
+        transform: true,
+        transformOptions: {
+          enableImplicitConversion: true,
+        },
+      }),
     },
   ],
 })
