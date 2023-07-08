@@ -10,6 +10,7 @@ import * as request from 'supertest';
 import { CoreModule } from 'src/core.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ApiResponseInterceptor } from 'src/api/interceptor/api-response.interceptor';
+import { ApiSetupModule } from 'src/api-setup.module';
 
 class TestException extends Error {}
 
@@ -41,14 +42,8 @@ describe('TestController (e2e)', () => {
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [CoreModule],
+      imports: [CoreModule, ApiSetupModule],
       controllers: [TestController],
-      providers: [
-        {
-          provide: APP_INTERCEPTOR,
-          useClass: ApiResponseInterceptor,
-        },
-      ],
     }).compile();
 
     app = moduleFixture.createNestApplication();
