@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { newDb } from 'pg-mem';
@@ -10,6 +10,9 @@ import { StockRepository } from './entity/domain/stock/stock.repository';
 import { MailSendHistoryRepository } from './entity/domain/history/mail/mail-send-history.repository';
 
 type NODE_ENV = 'test' | 'local' | 'production';
+interface TestEnvOption {
+  isTestEnv: boolean;
+}
 
 const repositories = [
   ProductRepository,
@@ -22,8 +25,11 @@ const repositories = [
   imports: [
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
+      useFactory: (
+        configService: ConfigService,
+      ): TypeOrmModuleOptions & TestEnvOption => {
         const env = configService.get('NODE_ENV') as NODE_ENV;
+        const isTestEnv = env === 'test';
 
         return {
           type: 'postgres',
@@ -37,12 +43,15 @@ const repositories = [
           namingStrategy: new SnakeNamingStrategy(),
           dropSchema: false,
           logging: true,
-          synchronize: env === 'test',
+          synchronize: isTestEnv,
           entities: [join(__dirname, '/**/*.entity{.ts,.js}')],
+          isTestEnv,
         };
       },
-      dataSourceFactory: async (options: DataSourceOptions) => {
-        const isTestEnv = options.synchronize;
+      dataSourceFactory: async ({
+        isTestEnv,
+        ...options
+      }: DataSourceOptions & TestEnvOption) => {
         const dataSource = isTestEnv
           ? await DBModule.createInMemoryDataSource(options)
           : new DataSource(options);
