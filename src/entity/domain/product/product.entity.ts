@@ -27,7 +27,7 @@ export class Product extends BaseTimeEntity {
   price: number;
 }
 
-interface CreateProductParams {
+export interface CreateProductParams {
   productNumber: string;
   type: ProductType;
   sellingStatus: ProductSellingStatus;
