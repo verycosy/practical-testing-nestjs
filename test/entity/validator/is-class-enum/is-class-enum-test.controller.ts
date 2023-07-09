@@ -1,10 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ClassEnumRequest } from './class-enum.request';
+import { ClassEnumTestRequest } from './class-enum-test.request';
 
 @Controller()
 export class IsClassEnumTestController {
   @Post('/')
-  validate(@Body() body: ClassEnumRequest) {
+  validate(@Body() body: ClassEnumTestRequest) {
     return body;
   }
 }

@@ -1,7 +1,7 @@
 import { plainToInstance } from 'class-transformer';
-import { ClassEnumRequest } from './class-enum.request';
+import { ClassEnumTestRequest } from './class-enum-test.request';
 import { validate } from 'class-validator';
-import { ClassEnumStatus } from './class-enum-status';
+import { ClassEnumTestStatus } from './class-enum-test-status';
 
 describe('IsClassEnum', () => {
   describe('plainToInstance', () => {
@@ -13,13 +13,13 @@ describe('IsClassEnum', () => {
       };
 
       // when
-      const result = plainToInstance(ClassEnumRequest, body);
+      const result = plainToInstance(ClassEnumTestRequest, body);
 
       // then
-      expect(result).toBeInstanceOf(ClassEnumRequest);
+      expect(result).toBeInstanceOf(ClassEnumTestRequest);
       expect(result.statuses).toEqual([
-        ClassEnumStatus.TODO,
-        ClassEnumStatus.PROGRESS,
+        ClassEnumTestStatus.TODO,
+        ClassEnumTestStatus.PROGRESS,
       ]);
     });
 
@@ -30,10 +30,10 @@ describe('IsClassEnum', () => {
       };
 
       // when
-      const result = plainToInstance(ClassEnumRequest, body);
+      const result = plainToInstance(ClassEnumTestRequest, body);
 
       // then
-      expect(result).toBeInstanceOf(ClassEnumRequest);
+      expect(result).toBeInstanceOf(ClassEnumTestRequest);
       expect(result.status).toBe('WRONG');
     });
   });
@@ -41,7 +41,7 @@ describe('IsClassEnum', () => {
   describe('validate', () => {
     it('유효하지 않은 값이면 에러 메시지를 반환한다', async () => {
       // given
-      const body = plainToInstance(ClassEnumRequest, {
+      const body = plainToInstance(ClassEnumTestRequest, {
         status: 'wrong',
       });
 
@@ -57,7 +57,7 @@ describe('IsClassEnum', () => {
 
     it('배열에 유효하지 않은 값이 섞여 있으면 에러 메시지를 반환한다', async () => {
       // given
-      const body = plainToInstance(ClassEnumRequest, {
+      const body = plainToInstance(ClassEnumTestRequest, {
         status: 'TODO',
         statuses: ['WRONG', 'TODO', 'WRONG2'],
       });
