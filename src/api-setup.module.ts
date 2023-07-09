@@ -4,7 +4,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { APP_INTERCEPTOR, APP_PIPE, Reflector } from '@nestjs/core';
-import { ApiResponseInterceptor } from './api/interceptor/api-response.interceptor';
+import { ApiResponseInterceptor } from './entity/interceptor/api-response.interceptor';
 
 @Module({
   providers: [
