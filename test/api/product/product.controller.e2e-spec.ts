@@ -4,6 +4,8 @@ import * as request from 'supertest';
 import { CoreModule } from 'src/core.module';
 import { ApiSetupModule } from 'src/api-setup.module';
 import { ProductApiModule } from 'src/api/product/product-api.module';
+import { ProductSellingStatus } from 'src/entity/domain/product/product-selling-status';
+import { ProductType } from 'src/entity/domain/product/product-type';
 
 describe('ProductController (e2e)', () => {
   let app: INestApplication;
@@ -15,6 +17,105 @@ describe('ProductController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+  });
+
+  describe('신규 상품 등록', () => {
+    it('등록된 신규 상품을 반환한다', () => {
+      // given
+      const body = {
+        type: ProductType.HANDMADE.code,
+        sellingStatus: ProductSellingStatus.SELLING.code,
+        name: '아메리카노',
+        price: 4000,
+      };
+
+      // when // then
+      return request(app.getHttpServer())
+        .post('/products')
+        .send(body)
+        .expect(201);
+    });
+
+    it('상품 타입은 필수값이다.', () => {
+      // given
+      const body = {
+        sellingStatus: ProductSellingStatus.SELLING.code,
+        name: '아메리카노',
+        price: 4000,
+      };
+
+      // when // then
+      return request(app.getHttpServer())
+        .post('/products')
+        .send(body)
+        .expect(400)
+        .expect({
+          statusCode: 400,
+          message: ['상품 타입은 필수입니다.'],
+          data: null,
+        });
+    });
+
+    it('상품 판매상태는 필수값이다.', () => {
+      // given
+      const body = {
+        type: ProductType.HANDMADE.code,
+        name: '아메리카노',
+        price: 4000,
+      };
+
+      // when // then
+      return request(app.getHttpServer())
+        .post('/products')
+        .send(body)
+        .expect(400)
+        .expect({
+          statusCode: 400,
+          message: ['상품 판매상태는 필수입니다.'],
+          data: null,
+        });
+    });
+
+    it('상품 이름은 필수값이다.', () => {
+      // given
+      const body = {
+        type: ProductType.HANDMADE.code,
+        sellingStatus: ProductSellingStatus.SELLING.code,
+        price: 4000,
+      };
+
+      // when // then
+      return request(app.getHttpServer())
+        .post('/products')
+        .send(body)
+        .expect(400)
+        .expect({
+          statusCode: 400,
+          message: ['상품 이름은 필수입니다.'],
+          data: null,
+        });
+    });
+
+    it('상품 가격은 양수이다.', () => {
+      // given
+      const body = {
+        type: ProductType.HANDMADE.code,
+        sellingStatus: ProductSellingStatus.SELLING.code,
+        name: '아메리카노',
+        price: 0,
+      };
+
+      // when // then
+      return request(app.getHttpServer())
+        .post('/products')
+        .send(body)
+        .expect(400)
+        .expect({
+          statusCode: 400,
+          message: ['상품 가격은 양수여야 합니다.'],
+          data: null,
+        });
+    });
   });
 
   it('판매 상품을 조회한다', () => {
