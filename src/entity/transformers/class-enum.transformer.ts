@@ -2,7 +2,7 @@ import { IStaticEnum } from 'ts-jenum';
 import { createValueTransformer } from './create-value-transformer';
 import { CodeName } from '../code-name';
 
-export type ClassEnum = Omit<IStaticEnum<CodeName>, 'new'>;
+export type ClassEnum = IStaticEnum<CodeName>;
 
 export const ClassEnumTransformer = (clazz: ClassEnum) =>
   createValueTransformer({

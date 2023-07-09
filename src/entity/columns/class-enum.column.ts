@@ -5,13 +5,13 @@ import {
 } from '../transformers/class-enum.transformer';
 
 export const ClassEnumColumn = (
-  classEnum: ClassEnum,
+  clazz: Omit<ClassEnum, 'new'>,
   options?: Omit<ColumnOptions, 'transformer' | 'type'>,
 ) => {
   return Column({
     type: 'varchar',
     length: 40,
-    transformer: ClassEnumTransformer(classEnum),
+    transformer: ClassEnumTransformer(clazz as ClassEnum),
     ...options,
   });
 };
