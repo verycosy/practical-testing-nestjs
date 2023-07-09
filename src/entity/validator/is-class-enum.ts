@@ -6,8 +6,11 @@ import { ClassEnum } from 'src/entity/transformers/class-enum.transformer';
 const TransformClassEnum = (clazz: ClassEnum) => {
   const handle = (value: any) => clazz.find(value) ?? value;
 
-  return Transform(({ value }) =>
-    Array.isArray(value) ? value.map(handle) : handle(value),
+  return Transform(
+    ({ value }) => (Array.isArray(value) ? value.map(handle) : handle(value)),
+    {
+      toClassOnly: true,
+    },
   );
 };
 
