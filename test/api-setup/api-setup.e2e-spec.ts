@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { ApiSetupModule } from 'src/api-setup.module';
-import { TestController } from './test.controller';
+import { ApiSetupTestController } from './api-setup-test.controller';
 
 describe('ApiSetup (e2e)', () => {
   let app: INestApplication;
@@ -10,7 +10,7 @@ describe('ApiSetup (e2e)', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [ApiSetupModule],
-      controllers: [TestController],
+      controllers: [ApiSetupTestController],
     }).compile();
 
     app = moduleFixture.createNestApplication();

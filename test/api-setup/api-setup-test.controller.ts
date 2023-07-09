@@ -6,11 +6,11 @@ import {
   Query,
   Body,
 } from '@nestjs/common';
-import { TestException } from './test.exception';
-import { TestRequest } from './test.request';
+import { ApiSetupTestException } from './api-setup-test.exception';
+import { ApiSetupTestRequest } from './api-setup-test.request';
 
 @Controller()
-export class TestController {
+export class ApiSetupTestController {
   @Get('/success')
   getSuccess() {
     return 'Hello World!';
@@ -23,7 +23,7 @@ export class TestController {
 
   @Get('/custom-exception')
   customException() {
-    throw new TestException('Something wrong');
+    throw new ApiSetupTestException('Something wrong');
   }
 
   @Get('/http-exception')
@@ -32,12 +32,12 @@ export class TestController {
   }
 
   @Get('/validation')
-  queryValidation(@Query() query: TestRequest) {
+  queryValidation(@Query() query: ApiSetupTestRequest) {
     return query;
   }
 
   @Post('/validation')
-  bodyValidation(@Body() body: TestRequest) {
+  bodyValidation(@Body() body: ApiSetupTestRequest) {
     return body;
   }
 }

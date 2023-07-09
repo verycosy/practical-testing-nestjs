@@ -1,6 +1,6 @@
 import { IsPositive, IsString } from 'class-validator';
 
-export class TestRequest {
+export class ApiSetupTestRequest {
   @IsString({ message: '이름은 문자열이어야 합니다.' })
   name: string;
 
