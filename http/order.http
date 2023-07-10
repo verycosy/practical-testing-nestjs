@@ -1,0 +1,7 @@
+### 주문 신규 생성
+POST http://localhost:3000/orders
+Content-Type: application/json
+
+{
+    "productNumbers": ["001", "002"]
+}
