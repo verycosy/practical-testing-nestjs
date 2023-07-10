@@ -1,5 +1,5 @@
 import { LocalDateTime } from '@js-joda/core';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 import { OrderRepository } from 'src/entity/domain/order/order.repository';
 import { ProductType } from 'src/entity/domain/product/product-type';
@@ -36,6 +36,12 @@ export class OrderService {
     const products = await this.productRepository.findAllByProductNumberIn(
       productNumbers,
     );
+
+    const isAllProductFound = products.length === productNumbers.length;
+    if (!isAllProductFound) {
+      throw new NotFoundException('상품목록을 찾을 수 없습니다.');
+    }
+
     const productMap = new Map<string, Product>();
     products.forEach((p) => productMap.set(p.productNumber, p));
 
