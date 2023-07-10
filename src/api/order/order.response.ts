@@ -12,7 +12,7 @@ export class OrderResponse {
   @ApiProperty()
   readonly totalPrice: number;
 
-  @Transform(({ value }) => '')
+  @Transform(({ value }) => DateTimeUtil.toDate(value))
   @ApiProperty({ type: String, format: 'date-time' })
   readonly registeredDateTime: LocalDateTime;
 
