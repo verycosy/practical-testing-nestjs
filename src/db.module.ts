@@ -6,6 +6,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { newDb } from 'pg-mem';
 import { join } from 'path';
 import { ProductRepository } from './entity/domain/product/product.repository';
+import { OrderRepository } from './entity/domain/order/order.repository';
 import { StockRepository } from './entity/domain/stock/stock.repository';
 import { MailSendHistoryRepository } from './entity/domain/history/mail/mail-send-history.repository';
 import {
@@ -84,6 +85,7 @@ export class DBModule {
 
     const repositories = [
       ProductRepository,
+      OrderRepository,
       StockRepository,
       MailSendHistoryRepository,
     ];
