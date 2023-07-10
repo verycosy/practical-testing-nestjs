@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { MailSendClient } from 'src/client/mail/mail-send-client';
+import { MailSendClient } from 'src/common/mail/mail-send-client';
 import { MailSendHistory } from 'src/entity/domain/history/mail/mail-send-history.entity';
 import { MailSendHistoryRepository } from 'src/entity/domain/history/mail/mail-send-history.repository';
 

@@ -1,9 +1,8 @@
 import { LocalDate, LocalDateTime } from '@js-joda/core';
 import { Test } from '@nestjs/testing';
 import { anyString, instance, mock, reset, when } from '@typestrong/ts-mockito';
-import { MailService } from 'src/api/mail/mail.service';
 import { OrderStatisticsService } from 'src/api/order/order-statistics.service';
-import { MailSendClient } from 'src/client/mail/mail-send-client';
+import { MailSendClient } from 'src/common/mail/mail-send-client';
 import { CoreModule } from 'src/core.module';
 import { MailSendHistory } from 'src/entity/domain/history/mail/mail-send-history.entity';
 import { MailSendHistoryRepository } from 'src/entity/domain/history/mail/mail-send-history.repository';
@@ -14,6 +13,7 @@ import { ProductSellingStatus } from 'src/entity/domain/product/product-selling-
 import { ProductType } from 'src/entity/domain/product/product-type';
 import { Product } from 'src/entity/domain/product/product.entity';
 import { ProductRepository } from 'src/entity/domain/product/product.repository';
+import { MailModule } from 'src/common/mail/mail.module';
 
 describe('OrderStatisticsService', () => {
   let orderStatisticsService: OrderStatisticsService;
@@ -24,8 +24,8 @@ describe('OrderStatisticsService', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      imports: [CoreModule],
-      providers: [OrderStatisticsService, MailService, MailSendClient],
+      imports: [CoreModule, MailModule],
+      providers: [OrderStatisticsService],
     })
       .overrideProvider(MailSendClient)
       .useValue(instance(mailSendClient))

@@ -6,8 +6,8 @@ import {
   verify,
   when as given,
 } from '@typestrong/ts-mockito';
-import { MailService } from 'src/api/mail/mail.service';
-import { MailSendClient } from 'src/client/mail/mail-send-client';
+import { MailService } from 'src/common/mail/mail.service';
+import { MailSendClient } from 'src/common/mail/mail-send-client';
 import { MailSendHistory } from 'src/entity/domain/history/mail/mail-send-history.entity';
 import { MailSendHistoryRepository } from 'src/entity/domain/history/mail/mail-send-history.repository';
 

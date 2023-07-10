@@ -1,6 +1,6 @@
 import { LocalDate } from '@js-joda/core';
 import { Injectable } from '@nestjs/common';
-import { MailService } from 'src/api/mail/mail.service';
+import { MailService } from 'src/common/mail/mail.service';
 import { OrderStatus } from 'src/entity/domain/order/order-status';
 import { OrderRepository } from 'src/entity/domain/order/order.repository';
 
