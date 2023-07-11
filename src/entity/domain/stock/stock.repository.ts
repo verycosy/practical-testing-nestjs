@@ -1,13 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { DataSource, In, Repository } from 'typeorm';
+import { In } from 'typeorm';
 import { Stock } from './stock.entity';
+import { CustomRepository } from 'src/entity/decorators/custom-repository.decorator';
+import { BaseRepository } from 'src/entity/base.repository';
 
-@Injectable()
-export class StockRepository extends Repository<Stock> {
-  constructor(dataSource: DataSource) {
-    super(Stock, dataSource.createEntityManager());
-  }
-
+@CustomRepository(Stock)
+export class StockRepository extends BaseRepository<Stock> {
   async findAllByProductNumberIn(productNumbers: string[]) {
     return await this.find({
       where: {

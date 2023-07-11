@@ -1,7 +1,12 @@
-import { DynamicModule, Global, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { DataSource, DataSourceOptions } from 'typeorm';
+import {
+  DataSource,
+  DataSourceOptions,
+  EntityTarget,
+  ObjectLiteral,
+} from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { newDb } from 'pg-mem';
 import { join } from 'path';
@@ -14,6 +19,8 @@ import {
   deleteDataSourceByName,
   initializeTransactionalContext,
 } from 'typeorm-transactional';
+import { BaseRepository } from './entity/base.repository';
+import { CUSTOM_REPOSITORY_TOKEN } from './entity/decorators/custom-repository.decorator';
 
 type NODE_ENV = 'test' | 'local' | 'production';
 interface TestEnvOption {
@@ -83,17 +90,35 @@ export class DBModule {
   static forRoot(): DynamicModule {
     initializeTransactionalContext();
 
-    const repositories = [
+    const customRepositories: (typeof BaseRepository<ObjectLiteral>)[] = [
       ProductRepository,
       OrderRepository,
       StockRepository,
       MailSendHistoryRepository,
     ];
 
+    const providers: Provider[] = [];
+    customRepositories.forEach((customRepository) => {
+      const entity: EntityTarget<ObjectLiteral> = Reflect.getMetadata(
+        CUSTOM_REPOSITORY_TOKEN,
+        customRepository,
+      );
+
+      providers.push({
+        inject: [DataSource],
+        provide: customRepository,
+        useFactory: (dataSource: DataSource) => {
+          const { target, manager, queryRunner } =
+            dataSource.getRepository(entity);
+          return new customRepository(target, manager, queryRunner);
+        },
+      });
+    });
+
     return {
       module: DBModule,
-      providers: repositories,
-      exports: repositories,
+      providers,
+      exports: providers,
     };
   }
 }

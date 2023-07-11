@@ -1,21 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSource, Entity, Repository } from 'typeorm';
+import { DataSource, Entity } from 'typeorm';
 import { BaseTimeEntity } from 'src/entity/base-time-entity';
 import { ChronoUnit } from '@js-joda/core';
 import { Injectable } from '@nestjs/common';
 import { TestUtil } from '../util/test-util';
 import { CoreModule } from 'src/core.module';
+import { BaseRepository } from 'src/entity/base.repository';
 
 @Entity()
 class TestEntity extends BaseTimeEntity {}
 
 @Injectable()
-class TestRepository extends Repository<TestEntity> {
-  constructor(private dataSource: DataSource) {
-    super(TestEntity, dataSource.createEntityManager());
-  }
-}
+class TestRepository extends BaseRepository<TestEntity> {}
 
 describe('BaseTimeEntity 동작 확인', () => {
   let testRepository: TestRepository;
@@ -24,7 +21,14 @@ describe('BaseTimeEntity 동작 확인', () => {
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [CoreModule, TypeOrmModule.forFeature([TestEntity])],
-      providers: [TestRepository],
+      providers: [
+        {
+          inject: [DataSource],
+          provide: TestRepository,
+          useFactory: (dataSource: DataSource) =>
+            new TestRepository(TestEntity, dataSource.createEntityManager()),
+        },
+      ],
     }).compile();
 
     testRepository = module.get(TestRepository);

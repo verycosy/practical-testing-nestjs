@@ -1,10 +1,6 @@
-import { DataSource, Repository } from 'typeorm';
+import { CustomRepository } from 'src/entity/decorators/custom-repository.decorator';
+import { BaseRepository } from 'src/entity/base.repository';
 import { MailSendHistory } from './mail-send-history.entity';
-import { Injectable } from '@nestjs/common';
 
-@Injectable()
-export class MailSendHistoryRepository extends Repository<MailSendHistory> {
-  constructor(dataSource: DataSource) {
-    super(MailSendHistory, dataSource.createEntityManager());
-  }
-}
+@CustomRepository(MailSendHistory)
+export class MailSendHistoryRepository extends BaseRepository<MailSendHistory> {}

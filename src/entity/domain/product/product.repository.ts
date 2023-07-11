@@ -1,14 +1,11 @@
-import { DataSource, In, Repository } from 'typeorm';
+import { In } from 'typeorm';
 import { Product } from './product.entity';
-import { Injectable } from '@nestjs/common';
 import { ProductSellingStatus } from './product-selling-status';
+import { CustomRepository } from 'src/entity/decorators/custom-repository.decorator';
+import { BaseRepository } from 'src/entity/base.repository';
 
-@Injectable()
-export class ProductRepository extends Repository<Product> {
-  constructor(dataSource: DataSource) {
-    super(Product, dataSource.createEntityManager());
-  }
-
+@CustomRepository(Product)
+export class ProductRepository extends BaseRepository<Product> {
   async findAllBySellingStatusIn(
     sellingStatuses: ProductSellingStatus[],
   ): Promise<Product[]> {

@@ -1,22 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import {
-  And,
-  DataSource,
-  LessThan,
-  MoreThanOrEqual,
-  Repository,
-} from 'typeorm';
+import { And, LessThan, MoreThanOrEqual } from 'typeorm';
 import { Order } from './order.entity';
 import { LocalDateTime } from '@js-joda/core';
 import { OrderStatus } from './order-status';
+import { BaseRepository } from 'src/entity/base.repository';
+import { CustomRepository } from 'src/entity/decorators/custom-repository.decorator';
 
-@Injectable()
-export class OrderRepository extends Repository<Order> {
-  constructor(dataSource: DataSource) {
-    super(Order, dataSource.createEntityManager());
-  }
-
-  // TODO: 테스트 작성
+@CustomRepository(Order)
+export class OrderRepository extends BaseRepository<Order> {
   async findOrdersBy(
     startDateTime: LocalDateTime,
     endDateTime: LocalDateTime,

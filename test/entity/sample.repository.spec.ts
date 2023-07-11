@@ -25,7 +25,14 @@ describe('SampleRepository', () => {
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [CoreModule, TypeOrmModule.forFeature([Sample])],
-      providers: [SampleRepository],
+      providers: [
+        {
+          inject: [DataSource],
+          provide: SampleRepository,
+          useFactory: (dataSource: DataSource) =>
+            new SampleRepository(Sample, dataSource.createEntityManager()),
+        },
+      ],
     }).compile();
 
     sampleRepository = module.get(SampleRepository);
