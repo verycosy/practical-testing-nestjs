@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { ProductService } from './product.service';
+import { ProductService } from '../../entity/domain/product/product.service';
 import { CreateProductRequest } from './request/create-product.request';
 import { ProductResponse } from './product.response';
 import { ApiHttpResponse } from 'src/entity/decorators/api-http-response.decorator';

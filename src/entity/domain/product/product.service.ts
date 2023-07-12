@@ -1,13 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ProductSellingStatus } from 'src/entity/domain/product/product-selling-status';
 import { ProductRepository } from 'src/entity/domain/product/product.repository';
-import { ProductResponse } from './product.response';
+import { ProductResponse } from '../../../api/product/product.response';
 import { Transactional } from 'typeorm-transactional';
 import { ProductNumberFactory } from './product-number-factory';
-import {
-  CreateProductParams,
-  Product,
-} from 'src/entity/domain/product/product.entity';
+import { CreateProductParams, Product } from './product.entity';
 
 @Injectable()
 export class ProductService {

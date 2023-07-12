@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
-import { ProductService } from '../../../src/api/product/product.service';
+import { ProductService } from 'src/entity/domain/product/product.service';
 import { CoreModule } from 'src/core.module';
-import { ProductNumberFactory } from 'src/api/product/product-number-factory';
+import { ProductNumberFactory } from 'src/entity/domain/product/product-number-factory';
 import { ProductRepository } from 'src/entity/domain/product/product.repository';
 import { ProductType } from 'src/entity/domain/product/product-type';
 import { ProductSellingStatus } from 'src/entity/domain/product/product-selling-status';

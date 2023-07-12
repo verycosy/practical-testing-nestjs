@@ -1,7 +1,7 @@
 import { instance, mock, reset, when } from '@typestrong/ts-mockito';
 import { ProductController } from 'src/api/product/product.controller';
 import { ProductResponse } from 'src/api/product/product.response';
-import { ProductService } from 'src/api/product/product.service';
+import { ProductService } from 'src/entity/domain/product/product.service';
 
 describe('ProductController', () => {
   let productController: ProductController;
