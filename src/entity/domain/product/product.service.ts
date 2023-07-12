@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ProductSellingStatus } from 'src/entity/domain/product/product-selling-status';
 import { ProductRepository } from 'src/entity/domain/product/product.repository';
-import { ProductResponse } from '../../../api/product/product.response';
 import { Transactional } from 'typeorm-transactional';
 import { ProductNumberFactory } from './product-number-factory';
 import { CreateProductParams, Product } from './product.entity';
@@ -22,16 +21,13 @@ export class ProductService {
       ...params,
       productNumber: nextProductNumber,
     });
-    const savedProduct = await this.productRepository.save(product);
 
-    return ProductResponse.of(savedProduct);
+    return await this.productRepository.save(product);
   }
 
   async getSellingProducts() {
-    const products = await this.productRepository.findAllBySellingStatusIn(
+    return await this.productRepository.findAllBySellingStatusIn(
       ProductSellingStatus.forDisplay(),
     );
-
-    return products.map(ProductResponse.of);
   }
 }

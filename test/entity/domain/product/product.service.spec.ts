@@ -5,7 +5,6 @@ import { ProductNumberFactory } from 'src/entity/domain/product/product-number-f
 import { ProductRepository } from 'src/entity/domain/product/product.repository';
 import { ProductType } from 'src/entity/domain/product/product-type';
 import { ProductSellingStatus } from 'src/entity/domain/product/product-selling-status';
-import { ProductResponse } from 'src/api/product/product.response';
 import { Product } from 'src/entity/domain/product/product.entity';
 
 describe('ProductService', () => {
@@ -44,7 +43,7 @@ describe('ProductService', () => {
     });
 
     const products = await productRepository.find({ order: { id: 'ASC' } });
-    expect(products).toMatchObject<ProductResponse[]>([
+    expect(products).toMatchObject<Partial<Product>[]>([
       {
         id: expect.any(Number),
         productNumber: '001',
@@ -87,7 +86,7 @@ describe('ProductService', () => {
     });
 
     const products = await productRepository.find({ order: { id: 'ASC' } });
-    expect(products).toMatchObject<ProductResponse[]>([
+    expect(products).toMatchObject<Partial<Product>[]>([
       {
         id: expect.any(Number),
         productNumber: '001',

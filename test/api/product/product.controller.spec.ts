@@ -1,6 +1,6 @@
 import { instance, mock, reset, when } from '@typestrong/ts-mockito';
 import { ProductController } from 'src/api/product/product.controller';
-import { ProductResponse } from 'src/api/product/product.response';
+import { Product } from 'src/entity/domain/product/product.entity';
 import { ProductService } from 'src/entity/domain/product/product.service';
 
 describe('ProductController', () => {
@@ -17,8 +17,8 @@ describe('ProductController', () => {
 
   it('판매 상품을 조회한다', async () => {
     // given
-    const productResponses = [] as ProductResponse[];
-    when(productService.getSellingProducts()).thenResolve(productResponses);
+    const products = [] as Product[];
+    when(productService.getSellingProducts()).thenResolve(products);
 
     // when
     const result = await productController.getSellingProducts();

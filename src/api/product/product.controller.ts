@@ -13,7 +13,8 @@ export class ProductController {
   })
   @Post('/')
   async createProduct(@Body() body: CreateProductRequest) {
-    return await this.productSerivce.createProduct(body);
+    const product = await this.productSerivce.createProduct(body);
+    return ProductResponse.of(product);
   }
 
   @ApiHttpResponse({
@@ -21,6 +22,7 @@ export class ProductController {
   })
   @Get('/selling')
   async getSellingProducts() {
-    return await this.productSerivce.getSellingProducts();
+    const products = await this.productSerivce.getSellingProducts();
+    return products.map(ProductResponse.of);
   }
 }
