@@ -8,9 +8,21 @@ export class HttpResponse<T> {
   @ApiProperty()
   readonly statusCode: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    oneOf: [
+      {
+        type: 'string',
+      },
+      {
+        type: 'array',
+        items: {
+          type: 'string',
+        },
+      },
+    ],
+    description: '문자열 혹은 문자열 배열',
+  })
   readonly message: string | string[];
 
-  @ApiProperty()
   readonly data: T | null;
 }
