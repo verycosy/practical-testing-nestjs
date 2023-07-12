@@ -24,19 +24,19 @@ export abstract class BaseTimeEntity {
   deletedAt: LocalDateTime | null;
 
   @BeforeInsert()
-  private insert() {
+  private _insert() {
     this.createdAt = LocalDateTime.now();
     this.updatedAt = LocalDateTime.now();
   }
 
   @BeforeUpdate()
-  private update() {
+  private _update() {
     this.updatedAt = LocalDateTime.now();
   }
 
   @BeforeRemove()
   @BeforeSoftRemove()
-  private softRemove() {
+  private _softRemove() {
     this.deletedAt = LocalDateTime.now();
   }
 }
