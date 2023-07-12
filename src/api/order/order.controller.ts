@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { OrderService } from './order.service';
+import { OrderService } from '../../entity/domain/order/order.service';
 import { CreateOrderRequest } from './request/create-order.request';
 import { LocalDateTime } from '@js-joda/core';
 import { ApiTags } from '@nestjs/swagger';

@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { MailModule } from 'src/common/mail/mail.module';
-import { OrderService } from './order.service';
 import { OrderController } from './order.controller';
 import { OrderStatisticsService } from './order-statistics.service';
+import { OrderModule } from 'src/entity/domain/order/order.module';
 
 @Module({
-  imports: [MailModule],
+  imports: [OrderModule, MailModule],
+  providers: [OrderStatisticsService],
   controllers: [OrderController],
-  providers: [OrderService, OrderStatisticsService],
 })
 export class OrderApiModule {}

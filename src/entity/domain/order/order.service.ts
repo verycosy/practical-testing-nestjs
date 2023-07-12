@@ -8,7 +8,7 @@ import { ProductRepository } from 'src/entity/domain/product/product.repository'
 import { Stock } from 'src/entity/domain/stock/stock.entity';
 import { StockRepository } from 'src/entity/domain/stock/stock.repository';
 import { Order } from 'src/entity/domain/order/order.entity';
-import { OrderResponse } from './order.response';
+import { OrderResponse } from '../../../api/order/order.response';
 
 @Injectable()
 export class OrderService {

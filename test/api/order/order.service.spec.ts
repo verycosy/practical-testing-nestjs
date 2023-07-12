@@ -1,6 +1,6 @@
 import { LocalDateTime } from '@js-joda/core';
 import { Test } from '@nestjs/testing';
-import { OrderService } from 'src/api/order/order.service';
+import { OrderService } from 'src/entity/domain/order/order.service';
 import { CoreModule } from 'src/core.module';
 import { ProductSellingStatus } from 'src/entity/domain/product/product-selling-status';
 import { ProductType } from 'src/entity/domain/product/product-type';
