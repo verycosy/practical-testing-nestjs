@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Observable, catchError, map, of } from 'rxjs';
-import { ApiResponse } from 'src/api/api.response';
+import { HttpResponse } from 'src/api/http.response';
 
 interface HttpExceptionResponse {
   message: string | string[];
@@ -18,10 +18,10 @@ interface HttpExceptionResponse {
 }
 
 @Injectable()
-export class ApiResponseInterceptor<T>
-  implements NestInterceptor<T, ApiResponse<T | null>>
+export class HttpResponseInterceptor<T>
+  implements NestInterceptor<T, HttpResponse<T | null>>
 {
-  private readonly logger = new Logger(ApiResponseInterceptor.name);
+  private readonly logger = new Logger(HttpResponseInterceptor.name);
 
   static getStatusCodeAndMessageFromError(err: Error) {
     if (err instanceof HttpException) {
@@ -37,13 +37,13 @@ export class ApiResponseInterceptor<T>
   intercept(
     context: ExecutionContext,
     next: CallHandler<T>,
-  ): Observable<ApiResponse<T | null>> {
+  ): Observable<HttpResponse<T | null>> {
     const response = context.switchToHttp().getResponse<Response>();
 
     return next.handle().pipe(
       map(
         (data) =>
-          new ApiResponse({
+          new HttpResponse({
             statusCode: response.statusCode,
             message: '',
             data,
@@ -53,11 +53,11 @@ export class ApiResponseInterceptor<T>
         this.logger.error(err, err.stack);
 
         const { statusCode, message } =
-          ApiResponseInterceptor.getStatusCodeAndMessageFromError(err);
+          HttpResponseInterceptor.getStatusCodeAndMessageFromError(err);
         response.status(statusCode);
 
         return of(
-          new ApiResponse({
+          new HttpResponse({
             statusCode,
             message,
             data: null,

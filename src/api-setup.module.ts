@@ -4,13 +4,13 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { APP_INTERCEPTOR, APP_PIPE, Reflector } from '@nestjs/core';
-import { ApiResponseInterceptor } from './entity/interceptor/api-response.interceptor';
+import { HttpResponseInterceptor } from './entity/interceptor/http-response.interceptor';
 
 @Module({
   providers: [
     {
       provide: APP_INTERCEPTOR,
-      useClass: ApiResponseInterceptor,
+      useClass: HttpResponseInterceptor,
     },
     {
       provide: APP_INTERCEPTOR,

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ApiResponse<T> {
-  constructor(params: ApiResponse<T>) {
+export class HttpResponse<T> {
+  constructor(params: HttpResponse<T>) {
     Object.assign(this, params);
   }
 
