@@ -18,7 +18,6 @@ describe('OrderController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    console.log(app.get(ProductRepository));
     await app.init();
   });
 

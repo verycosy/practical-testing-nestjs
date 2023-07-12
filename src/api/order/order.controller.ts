@@ -23,9 +23,11 @@ export class OrderController {
   async createOrder(@Body() { productNumbers }: CreateOrderRequest) {
     const registeredDateTime = LocalDateTime.now();
 
-    return await this.orderService.createOrder(
+    const order = await this.orderService.createOrder(
       productNumbers,
       registeredDateTime,
     );
+
+    return OrderResponse.of(order);
   }
 }

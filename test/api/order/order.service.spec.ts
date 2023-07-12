@@ -37,24 +37,28 @@ describe('OrderService', () => {
     const productNumbers = ['001', '002'];
 
     // when
-    const orderResponse = await orderService.createOrder(
+    const order = await orderService.createOrder(
       productNumbers,
       registeredDateTime,
     );
 
     // then
-    expect(orderResponse).toMatchObject({
+    expect(order).toMatchObject({
       id: expect.any(Number),
       totalPrice: 4000,
       registeredDateTime,
-      products: [
+      orderProducts: [
         {
-          productNumber: '001',
-          price: 1000,
+          product: {
+            productNumber: '001',
+            price: 1000,
+          },
         },
         {
-          productNumber: '002',
-          price: 3000,
+          product: {
+            productNumber: '002',
+            price: 3000,
+          },
         },
       ],
     });
@@ -82,14 +86,18 @@ describe('OrderService', () => {
       id: expect.any(Number),
       totalPrice: 2000,
       registeredDateTime,
-      products: [
+      orderProducts: [
         {
-          productNumber: '001',
-          price: 1000,
+          product: {
+            productNumber: '001',
+            price: 1000,
+          },
         },
         {
-          productNumber: '001',
-          price: 1000,
+          product: {
+            productNumber: '001',
+            price: 1000,
+          },
         },
       ],
     });
@@ -121,22 +129,18 @@ describe('OrderService', () => {
       id: expect.any(Number),
       totalPrice: 10000,
       registeredDateTime: registeredDateTime,
-      products: [
+      orderProducts: [
         {
-          productNumber: '001',
-          price: 1000,
+          product: { productNumber: '001', price: 1000 },
         },
         {
-          productNumber: '001',
-          price: 1000,
+          product: { productNumber: '001', price: 1000 },
         },
         {
-          productNumber: '002',
-          price: 3000,
+          product: { productNumber: '002', price: 3000 },
         },
         {
-          productNumber: '003',
-          price: 5000,
+          product: { productNumber: '003', price: 5000 },
         },
       ],
     });
