@@ -30,9 +30,7 @@ export class OrderResponse {
       id: order.id,
       totalPrice: order.totalPrice,
       registeredDateTime: order.registeredDateTime,
-      products: order.orderProducts.map((orderProduct) =>
-        ProductResponse.of(orderProduct.product),
-      ),
+      products: order.products.map(ProductResponse.of),
     });
   }
 }

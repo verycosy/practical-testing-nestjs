@@ -47,18 +47,14 @@ describe('OrderService', () => {
       id: expect.any(Number),
       totalPrice: 4000,
       registeredDateTime,
-      orderProducts: [
+      products: [
         {
-          product: {
-            productNumber: '001',
-            price: 1000,
-          },
+          productNumber: '001',
+          price: 1000,
         },
         {
-          product: {
-            productNumber: '002',
-            price: 3000,
-          },
+          productNumber: '002',
+          price: 3000,
         },
       ],
     });
@@ -86,18 +82,14 @@ describe('OrderService', () => {
       id: expect.any(Number),
       totalPrice: 2000,
       registeredDateTime,
-      orderProducts: [
+      products: [
         {
-          product: {
-            productNumber: '001',
-            price: 1000,
-          },
+          productNumber: '001',
+          price: 1000,
         },
         {
-          product: {
-            productNumber: '001',
-            price: 1000,
-          },
+          productNumber: '001',
+          price: 1000,
         },
       ],
     });
@@ -129,18 +121,22 @@ describe('OrderService', () => {
       id: expect.any(Number),
       totalPrice: 10000,
       registeredDateTime: registeredDateTime,
-      orderProducts: [
+      products: [
         {
-          product: { productNumber: '001', price: 1000 },
+          productNumber: '001',
+          price: 1000,
         },
         {
-          product: { productNumber: '001', price: 1000 },
+          productNumber: '001',
+          price: 1000,
         },
         {
-          product: { productNumber: '002', price: 3000 },
+          productNumber: '002',
+          price: 3000,
         },
         {
-          product: { productNumber: '003', price: 5000 },
+          productNumber: '003',
+          price: 5000,
         },
       ],
     });

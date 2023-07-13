@@ -44,7 +44,7 @@ export class Order extends BaseTimeEntity {
   @OneToMany(() => OrderProduct, (orderProduct) => orderProduct.order, {
     cascade: true,
   })
-  orderProducts: OrderProduct[];
+  private orderProducts: OrderProduct[];
 
   private calculateTotalPrice(products: Product[]): number {
     return products.reduce((acc, cur) => (acc += cur.price), 0);
@@ -56,5 +56,9 @@ export class Order extends BaseTimeEntity {
       products,
       registeredDateTime,
     });
+  }
+
+  get products() {
+    return this.orderProducts.map(({ product }) => product);
   }
 }
