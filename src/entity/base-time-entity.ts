@@ -4,14 +4,11 @@ import {
   BeforeRemove,
   BeforeSoftRemove,
   BeforeUpdate,
-  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { LocalDateTimeColumn } from './columns/local-date-time.column';
+import { BaseIdEntity } from './base-id-entity';
 
-export abstract class BaseTimeEntity {
-  @PrimaryGeneratedColumn('increment')
-  id!: number;
-
+export abstract class BaseTimeEntity extends BaseIdEntity {
   @LocalDateTimeColumn()
   createdAt!: LocalDateTime;
 
