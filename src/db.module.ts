@@ -92,9 +92,7 @@ export class DBModule {
     return db.adapters.createTypeormDataSource(options);
   }
 
-  static forRoot(): DynamicModule {
-    initializeTransactionalContext();
-
+  private static getCustomRepositoryProviders(): Provider[] {
     const customRepositories: (typeof BaseRepository<ObjectLiteral>)[] = [
       ProductRepository,
       OrderRepository,
@@ -102,14 +100,13 @@ export class DBModule {
       MailSendHistoryRepository,
     ];
 
-    const providers: Provider[] = [];
-    customRepositories.forEach((customRepository) => {
+    return customRepositories.map((customRepository) => {
       const entity: EntityTarget<ObjectLiteral> = Reflect.getMetadata(
         CUSTOM_REPOSITORY_TOKEN,
         customRepository,
       );
 
-      providers.push({
+      return {
         inject: [DataSource],
         provide: customRepository,
         useFactory: (dataSource: DataSource) => {
@@ -117,8 +114,13 @@ export class DBModule {
             dataSource.getRepository(entity);
           return new customRepository(target, manager, queryRunner);
         },
-      });
+      };
     });
+  }
+
+  static forRoot(): DynamicModule {
+    initializeTransactionalContext();
+    const providers = DBModule.getCustomRepositoryProviders();
 
     return {
       module: DBModule,
