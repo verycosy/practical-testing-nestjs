@@ -11,7 +11,7 @@ export class CreateProductRequest {
   @IsClassEnum(ProductType, {
     message: '상품 타입은 필수입니다.',
   })
-  readonly type: ProductType;
+  readonly type!: ProductType;
 
   @ApiProperty({
     enum: ProductSellingStatus.keys(),
@@ -19,17 +19,17 @@ export class CreateProductRequest {
   @IsClassEnum(ProductSellingStatus, {
     message: '상품 판매상태는 필수입니다.',
   })
-  readonly sellingStatus: ProductSellingStatus;
+  readonly sellingStatus!: ProductSellingStatus;
 
   @ApiProperty()
   @IsString({
     message: '상품 이름은 필수입니다.',
   })
-  readonly name: string;
+  readonly name!: string;
 
   @ApiProperty()
   @IsPositive({
     message: '상품 가격은 양수여야 합니다.',
   })
-  readonly price: number;
+  readonly price!: number;
 }

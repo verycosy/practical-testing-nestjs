@@ -4,7 +4,7 @@ import { IsOptional } from 'class-validator';
 
 export class ClassEnumTestRequest {
   @IsClassEnum(ClassEnumTestStatus)
-  status: ClassEnumTestStatus;
+  status!: ClassEnumTestStatus;
 
   @IsOptional()
   @IsClassEnum(ClassEnumTestStatus, {

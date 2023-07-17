@@ -6,28 +6,28 @@ import { Product } from 'src/entity/domain/product/product.entity';
 
 export class ProductResponse {
   @ApiProperty()
-  readonly id: number;
+  readonly id!: number;
 
   @ApiProperty()
-  readonly productNumber: string;
+  readonly productNumber!: string;
 
   @Transform(({ value }) => value.code)
   @ApiProperty({
     enum: ProductType.keys(),
   })
-  readonly type: ProductType;
+  readonly type!: ProductType;
 
   @Transform(({ value }) => value.code)
   @ApiProperty({
     enum: ProductSellingStatus.keys(),
   })
-  readonly sellingStatus: ProductSellingStatus;
+  readonly sellingStatus!: ProductSellingStatus;
 
   @ApiProperty()
-  readonly name: string;
+  readonly name!: string;
 
   @ApiProperty()
-  readonly price: number;
+  readonly price!: number;
 
   private constructor(product: Product) {
     Object.assign(this, product);

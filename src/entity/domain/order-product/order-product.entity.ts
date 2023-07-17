@@ -5,16 +5,18 @@ import { Product } from '../product/product.entity';
 
 @Entity()
 export class OrderProduct extends BaseTimeEntity {
-  constructor(params: CreateOrderProductParams) {
-    super();
-    Object.assign(this, params);
-  }
-
   @ManyToOne(() => Order)
   order: Order;
 
   @ManyToOne(() => Product)
   product: Product;
+
+  constructor(params: CreateOrderProductParams) {
+    super();
+
+    this.order = params.order;
+    this.product = params.product;
+  }
 }
 
 interface CreateOrderProductParams {

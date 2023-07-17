@@ -1,10 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class HttpResponse<T> {
-  constructor(params: HttpResponse<T>) {
-    Object.assign(this, params);
-  }
-
   @ApiProperty()
   readonly statusCode: number;
 
@@ -25,4 +21,10 @@ export class HttpResponse<T> {
   readonly message: string | string[];
 
   readonly data: T | null;
+
+  constructor(params: HttpResponse<T>) {
+    this.statusCode = params.statusCode;
+    this.data = params.data;
+    this.message = params.message;
+  }
 }

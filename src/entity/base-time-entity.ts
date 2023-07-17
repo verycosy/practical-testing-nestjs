@@ -10,18 +10,18 @@ import { LocalDateTimeColumn } from './columns/local-date-time.column';
 
 export abstract class BaseTimeEntity {
   @PrimaryGeneratedColumn('increment')
-  id: number;
+  id!: number;
 
   @LocalDateTimeColumn()
-  createdAt: LocalDateTime;
+  createdAt!: LocalDateTime;
 
   @LocalDateTimeColumn()
-  updatedAt: LocalDateTime;
+  updatedAt!: LocalDateTime;
 
   @LocalDateTimeColumn({
     nullable: true,
   })
-  deletedAt: LocalDateTime | null;
+  deletedAt!: LocalDateTime | null;
 
   @BeforeInsert()
   private _insert() {

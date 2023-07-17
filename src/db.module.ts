@@ -55,13 +55,18 @@ interface TestEnvOption {
           isTestEnv,
         };
       },
-      dataSourceFactory: async ({
-        isTestEnv,
-        ...options
-      }: DataSourceOptions & TestEnvOption) => {
+      dataSourceFactory: async (
+        options?: DataSourceOptions & Partial<TestEnvOption>,
+      ) => {
+        if (!options) {
+          throw new Error('Empty DataSourceOptions');
+        }
+
+        const { isTestEnv, ...rest } = options;
+
         const dataSource = isTestEnv
-          ? DBModule.createInMemoryDataSource(options)
-          : new DataSource(options);
+          ? DBModule.createInMemoryDataSource(rest)
+          : new DataSource(rest);
 
         deleteDataSourceByName('default');
         addTransactionalDataSource(dataSource);

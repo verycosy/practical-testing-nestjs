@@ -15,6 +15,20 @@ interface CreateOrderParams {
 
 @Entity('orders')
 export class Order extends BaseTimeEntity {
+  @ClassEnumColumn(OrderStatus)
+  orderStatus: OrderStatus;
+
+  @Column()
+  totalPrice: number;
+
+  @LocalDateTimeColumn()
+  registeredDateTime: LocalDateTime;
+
+  @OneToMany(() => OrderProduct, (orderProduct) => orderProduct.order, {
+    cascade: true,
+  })
+  private orderProducts: OrderProduct[];
+
   constructor(params: CreateOrderParams) {
     super();
 
@@ -31,20 +45,6 @@ export class Order extends BaseTimeEntity {
     this.orderStatus = orderStatus;
     this.registeredDateTime = registeredDateTime;
   }
-
-  @ClassEnumColumn(OrderStatus)
-  orderStatus: OrderStatus;
-
-  @Column()
-  totalPrice: number;
-
-  @LocalDateTimeColumn()
-  registeredDateTime: LocalDateTime;
-
-  @OneToMany(() => OrderProduct, (orderProduct) => orderProduct.order, {
-    cascade: true,
-  })
-  private orderProducts: OrderProduct[];
 
   private calculateTotalPrice(products: Product[]): number {
     return products.reduce((acc, cur) => (acc += cur.price), 0);

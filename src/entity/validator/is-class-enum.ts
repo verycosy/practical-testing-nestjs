@@ -14,12 +14,15 @@ const TransformClassEnum = (clazz: ClassEnum) => {
   );
 };
 
-const ValidateClassEnum = (clazz: ClassEnum, options?: ValidationOptions) => {
-  return function (object: any, propertyName: string) {
+const ValidateClassEnum = (
+  clazz: ClassEnum,
+  options?: ValidationOptions,
+): PropertyDecorator => {
+  return function (target: object, propertyKey: string | symbol) {
     registerDecorator({
       name: 'isClassEnum',
-      target: object.constructor,
-      propertyName,
+      target: target.constructor,
+      propertyName: propertyKey as string,
       constraints: [clazz],
       options,
       validator: {

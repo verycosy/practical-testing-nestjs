@@ -3,16 +3,18 @@ import { BaseTimeEntity } from 'src/entity/base-time-entity';
 
 @Entity()
 export class Stock extends BaseTimeEntity {
-  constructor(source: CreateStockParams) {
-    super();
-    Object.assign(this, source);
-  }
-
   @Column()
   productNumber: string;
 
   @Column()
   quantity: number;
+
+  constructor(params: CreateStockParams) {
+    super();
+
+    this.productNumber = params.productNumber;
+    this.quantity = params.quantity;
+  }
 
   static create(productNumber: string, quantity: number) {
     return new Stock({ productNumber, quantity });

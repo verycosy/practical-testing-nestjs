@@ -7,19 +7,19 @@ import { DateTimeUtil } from 'src/util/date-time-util';
 
 export class OrderResponse {
   @ApiProperty()
-  readonly id: number;
+  readonly id!: number;
 
   @ApiProperty()
-  readonly totalPrice: number;
+  readonly totalPrice!: number;
 
   @Transform(({ value }) => DateTimeUtil.toDate(value))
   @ApiProperty({ type: String, format: 'date-time' })
-  readonly registeredDateTime: LocalDateTime;
+  readonly registeredDateTime!: LocalDateTime;
 
   @ApiProperty({
     type: [ProductResponse],
   })
-  readonly products: ProductResponse[];
+  readonly products!: ProductResponse[];
 
   private constructor(params: OrderResponse) {
     Object.assign(this, params);

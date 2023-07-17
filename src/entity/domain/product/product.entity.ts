@@ -6,11 +6,6 @@ import { ProductSellingStatus } from './product-selling-status';
 
 @Entity()
 export class Product extends BaseTimeEntity {
-  constructor(params: CreateProductParams) {
-    super();
-    Object.assign(this, params);
-  }
-
   @Column()
   productNumber: string;
 
@@ -25,6 +20,16 @@ export class Product extends BaseTimeEntity {
 
   @Column()
   price: number;
+
+  constructor(params: CreateProductParams) {
+    super();
+
+    this.productNumber = params.productNumber;
+    this.type = params.type;
+    this.sellingStatus = params.sellingStatus;
+    this.name = params.name;
+    this.price = params.price;
+  }
 }
 
 export interface CreateProductParams {
