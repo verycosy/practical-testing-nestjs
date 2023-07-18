@@ -1,6 +1,7 @@
 import { PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity } from './base-entity';
 
-export abstract class BaseIdEntity {
+export abstract class BaseIdEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
-  id!: number;
+  readonly id!: number;
 }

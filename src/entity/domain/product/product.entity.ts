@@ -7,19 +7,19 @@ import { ProductSellingStatus } from './product-selling-status';
 @Entity()
 export class Product extends BaseTimeEntity {
   @Column()
-  productNumber: string;
+  readonly productNumber: string;
 
   @ClassEnumColumn(ProductType)
-  type: ProductType;
+  readonly type: ProductType;
 
   @ClassEnumColumn(ProductSellingStatus)
-  sellingStatus: ProductSellingStatus;
+  readonly sellingStatus: ProductSellingStatus;
 
   @Column()
-  name: string;
+  readonly name: string;
 
   @Column()
-  price: number;
+  readonly price: number;
 
   constructor(params: CreateProductParams) {
     super();

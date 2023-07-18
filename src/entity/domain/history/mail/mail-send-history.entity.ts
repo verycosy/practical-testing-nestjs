@@ -4,16 +4,16 @@ import { BaseTimeEntity } from 'src/entity/base-time-entity';
 @Entity()
 export class MailSendHistory extends BaseTimeEntity {
   @Column()
-  fromEmail: string;
+  readonly fromEmail: string;
 
   @Column()
-  toEmail: string;
+  readonly toEmail: string;
 
   @Column()
-  subject: string;
+  readonly subject: string;
 
   @Column()
-  content: string;
+  readonly content: string;
 
   constructor(params: CreateMailSendHistoryParams) {
     super();

@@ -6,10 +6,10 @@ import { Product } from '../product/product.entity';
 @Entity()
 export class OrderProduct extends BaseTimeEntity {
   @ManyToOne(() => Order)
-  order: Order;
+  readonly order: Order;
 
   @ManyToOne(() => Product)
-  product: Product;
+  readonly product: Product;
 
   constructor(params: CreateOrderProductParams) {
     super();

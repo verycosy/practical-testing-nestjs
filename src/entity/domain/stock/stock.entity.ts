@@ -4,10 +4,10 @@ import { BaseTimeEntity } from 'src/entity/base-time-entity';
 @Entity()
 export class Stock extends BaseTimeEntity {
   @Column()
-  productNumber: string;
+  readonly productNumber: string;
 
   @Column()
-  quantity: number;
+  readonly quantity: number;
 
   constructor(params: CreateStockParams) {
     super();
@@ -29,7 +29,7 @@ export class Stock extends BaseTimeEntity {
       throw new Error('차감할 재고 수량이 없습니다.');
     }
 
-    this.quantity -= quantity;
+    this.mutable.quantity -= quantity;
   }
 }
 

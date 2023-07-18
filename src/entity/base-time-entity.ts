@@ -10,30 +10,30 @@ import { BaseIdEntity } from './base-id-entity';
 
 export abstract class BaseTimeEntity extends BaseIdEntity {
   @LocalDateTimeColumn()
-  createdAt!: LocalDateTime;
+  readonly createdAt!: LocalDateTime;
 
   @LocalDateTimeColumn()
-  updatedAt!: LocalDateTime;
+  readonly updatedAt!: LocalDateTime;
 
   @LocalDateTimeColumn({
     nullable: true,
   })
-  deletedAt!: LocalDateTime | null;
+  readonly deletedAt!: LocalDateTime | null;
 
   @BeforeInsert()
   private _insert() {
-    this.createdAt = LocalDateTime.now();
-    this.updatedAt = LocalDateTime.now();
+    this.mutable.createdAt = LocalDateTime.now();
+    this.mutable.updatedAt = LocalDateTime.now();
   }
 
   @BeforeUpdate()
   private _update() {
-    this.updatedAt = LocalDateTime.now();
+    this.mutable.updatedAt = LocalDateTime.now();
   }
 
   @BeforeRemove()
   @BeforeSoftRemove()
   private _softRemove() {
-    this.deletedAt = LocalDateTime.now();
+    this.mutable.deletedAt = LocalDateTime.now();
   }
 }

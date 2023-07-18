@@ -16,18 +16,18 @@ interface CreateOrderParams {
 @Entity('orders')
 export class Order extends BaseTimeEntity {
   @ClassEnumColumn(OrderStatus)
-  orderStatus: OrderStatus;
+  readonly orderStatus: OrderStatus;
 
   @Column()
-  totalPrice: number;
+  readonly totalPrice: number;
 
   @LocalDateTimeColumn()
-  registeredDateTime: LocalDateTime;
+  readonly registeredDateTime: LocalDateTime;
 
   @OneToMany(() => OrderProduct, (orderProduct) => orderProduct.order, {
     cascade: true,
   })
-  private orderProducts: OrderProduct[];
+  private readonly orderProducts: OrderProduct[];
 
   constructor(params: CreateOrderParams) {
     super();
