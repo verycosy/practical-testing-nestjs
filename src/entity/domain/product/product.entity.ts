@@ -19,7 +19,7 @@ export class Product extends BaseTimeEntity {
   readonly name: string;
 
   @Column()
-  readonly price: number;
+  readonly price!: number;
 
   constructor(params: CreateProductParams) {
     super();
@@ -28,7 +28,15 @@ export class Product extends BaseTimeEntity {
     this.type = params.type;
     this.sellingStatus = params.sellingStatus;
     this.name = params.name;
-    this.price = params.price;
+    this.setPrice(params.price);
+  }
+
+  setPrice(newPrice: number) {
+    if (newPrice <= 0) {
+      throw new Error('상품 가격은 0원보다 커야 합니다.');
+    }
+
+    this.mutable.price = newPrice;
   }
 }
 

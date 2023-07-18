@@ -5,6 +5,8 @@ import { ProductApiModule } from 'src/api/product/product-api.module';
 import { ProductSellingStatus } from 'src/entity/domain/product/product-selling-status';
 import { ProductType } from 'src/entity/domain/product/product-type';
 import { createInMemoryTest } from 'test/util/create-in-memory-test';
+import { ProductRepository } from 'src/entity/domain/product/product.repository';
+import { Product } from 'src/entity/domain/product/product.entity';
 
 describe('ProductController (e2e)', () => {
   let app: INestApplication;
@@ -117,6 +119,24 @@ describe('ProductController (e2e)', () => {
     });
   });
 
+  it('상품 가격을 수정한다', async () => {
+    // given
+    const { id } = await createProduct(app, '001', 4000);
+    const newPrice = 1000;
+    const body = {
+      price: newPrice,
+    };
+
+    // when // then
+    const {
+      body: { data },
+      statusCode,
+    } = await request(app.getHttpServer()).patch(`/products/${id}`).send(body);
+
+    expect(statusCode).toBe(200);
+    expect(data.price).toBe(newPrice);
+  });
+
   it('판매 상품을 조회한다', () => {
     return request(app.getHttpServer())
       .get('/products/selling')
@@ -128,3 +148,20 @@ describe('ProductController (e2e)', () => {
       });
   });
 });
+
+const createProduct = async (
+  app: INestApplication,
+  productNumber: string,
+  price: number,
+) => {
+  const productRepository = app.get(ProductRepository);
+  const product = new Product({
+    productNumber,
+    type: ProductType.HANDMADE,
+    sellingStatus: ProductSellingStatus.SELLING,
+    name: '아메리카노',
+    price,
+  });
+
+  return await productRepository.save(product);
+};

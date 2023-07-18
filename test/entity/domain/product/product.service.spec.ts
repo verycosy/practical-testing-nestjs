@@ -104,6 +104,26 @@ describe('ProductService', () => {
     ]);
   });
 
+  it('상품 가격을 변경한다', async () => {
+    // given
+    const product = createProduct(
+      '001',
+      ProductType.HANDMADE,
+      ProductSellingStatus.SELLING,
+      '아메리카노',
+      4000,
+    );
+
+    const { id } = await productRepository.save(product);
+    const newPrice = 1000;
+
+    // when
+    const updatedProduct = await productService.updateProduct(id, newPrice);
+
+    // then
+    expect(updatedProduct.price).toBe(newPrice);
+  });
+
   function createProduct(
     productNumber: string,
     type: ProductType,
