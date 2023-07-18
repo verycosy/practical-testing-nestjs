@@ -10,10 +10,6 @@ import {
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { newDb } from 'pg-mem';
 import { join } from 'path';
-import { ProductRepository } from './entity/domain/product/product.repository';
-import { OrderRepository } from './entity/domain/order/order.repository';
-import { StockRepository } from './entity/domain/stock/stock.repository';
-import { MailSendHistoryRepository } from './entity/domain/history/mail/mail-send-history.repository';
 import {
   addTransactionalDataSource,
   deleteDataSourceByName,
@@ -22,6 +18,8 @@ import {
 import { BaseRepository } from './entity/base.repository';
 import { CUSTOM_REPOSITORY_TOKEN } from './entity/decorators/custom-repository.decorator';
 import { getTransactionalContext } from 'typeorm-transactional/dist/common';
+
+type CustomRepository = typeof BaseRepository<ObjectLiteral>;
 
 @Global()
 @Module({})
@@ -41,14 +39,9 @@ export class DBModule {
     return db.adapters.createTypeormDataSource(options);
   }
 
-  private static getCustomRepositoryProviders(): Provider[] {
-    const customRepositories: (typeof BaseRepository<ObjectLiteral>)[] = [
-      ProductRepository,
-      OrderRepository,
-      StockRepository,
-      MailSendHistoryRepository,
-    ];
-
+  private static getCustomRepositoryProviders(
+    customRepositories: CustomRepository[],
+  ): Provider[] {
     return customRepositories.map((customRepository) => {
       const entity: EntityTarget<ObjectLiteral> = Reflect.getMetadata(
         CUSTOM_REPOSITORY_TOKEN,
@@ -67,12 +60,16 @@ export class DBModule {
     });
   }
 
-  static forRoot({ useInMemoryDB }: DBModuleOptions): DynamicModule {
+  static forRoot(
+    options: DBModuleOptions = { useInMemoryDB: false, customRepositories: [] },
+  ): DynamicModule {
+    const { useInMemoryDB, customRepositories } = options;
+
     if (!getTransactionalContext()) {
       initializeTransactionalContext();
     }
 
-    const providers = DBModule.getCustomRepositoryProviders();
+    const providers = DBModule.getCustomRepositoryProviders(customRepositories);
 
     return {
       module: DBModule,
@@ -120,4 +117,5 @@ export class DBModule {
 
 export interface DBModuleOptions {
   useInMemoryDB: boolean;
+  customRepositories: CustomRepository[];
 }

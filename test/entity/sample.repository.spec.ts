@@ -17,6 +17,7 @@ import { LocalDateTime } from '@js-joda/core';
 import { DateTimeUtil } from 'src/util/date-time-util';
 import { SampleStatus } from './sample-status';
 import { createInMemoryTest } from 'test/util/create-in-memory-test';
+import { DBModule } from 'src/db.module';
 
 describe('SampleRepository', () => {
   let sampleRepository: SampleRepository;
@@ -24,14 +25,12 @@ describe('SampleRepository', () => {
 
   beforeAll(async () => {
     module = await createInMemoryTest({
-      imports: [TypeOrmModule.forFeature([Sample])],
-      providers: [
-        {
-          inject: [DataSource],
-          provide: SampleRepository,
-          useFactory: (dataSource: DataSource) =>
-            new SampleRepository(Sample, dataSource.createEntityManager()),
-        },
+      imports: [
+        DBModule.forRoot({
+          useInMemoryDB: true,
+          customRepositories: [SampleRepository],
+        }),
+        TypeOrmModule.forFeature([Sample]),
       ],
     }).compile();
 

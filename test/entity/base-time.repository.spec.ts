@@ -3,15 +3,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource, Entity } from 'typeorm';
 import { BaseTimeEntity } from 'src/entity/base-time-entity';
 import { ChronoUnit } from '@js-joda/core';
-import { Injectable } from '@nestjs/common';
 import { TestUtil } from '../util/test-util';
 import { BaseRepository } from 'src/entity/base.repository';
 import { createInMemoryTest } from 'test/util/create-in-memory-test';
+import { DBModule } from 'src/db.module';
+import { CustomRepository } from 'src/entity/decorators/custom-repository.decorator';
 
 @Entity()
 class TestEntity extends BaseTimeEntity {}
 
-@Injectable()
+@CustomRepository(TestEntity)
 class TestRepository extends BaseRepository<TestEntity> {}
 
 describe('BaseTimeEntity 동작 확인', () => {
@@ -20,14 +21,12 @@ describe('BaseTimeEntity 동작 확인', () => {
 
   beforeAll(async () => {
     module = await createInMemoryTest({
-      imports: [TypeOrmModule.forFeature([TestEntity])],
-      providers: [
-        {
-          inject: [DataSource],
-          provide: TestRepository,
-          useFactory: (dataSource: DataSource) =>
-            new TestRepository(TestEntity, dataSource.createEntityManager()),
-        },
+      imports: [
+        DBModule.forRoot({
+          useInMemoryDB: true,
+          customRepositories: [TestRepository],
+        }),
+        TypeOrmModule.forFeature([TestEntity]),
       ],
     }).compile();
 
