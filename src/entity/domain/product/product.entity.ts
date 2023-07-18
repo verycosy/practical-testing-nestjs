@@ -3,6 +3,7 @@ import { BaseTimeEntity } from 'src/entity/base-time-entity';
 import { ClassEnumColumn } from 'src/entity/columns/class-enum.column';
 import { ProductType } from './product-type';
 import { ProductSellingStatus } from './product-selling-status';
+import { DomainException } from 'src/entity/exceptions/domain.exception';
 
 @Entity()
 export class Product extends BaseTimeEntity {
@@ -33,7 +34,7 @@ export class Product extends BaseTimeEntity {
 
   setPrice(newPrice: number) {
     if (newPrice <= 0) {
-      throw new Error('상품 가격은 0원보다 커야 합니다.');
+      throw new DomainException('상품 가격은 0원보다 커야 합니다.');
     }
 
     this.mutable.price = newPrice;

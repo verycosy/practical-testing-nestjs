@@ -6,6 +6,7 @@ import { Product } from 'src/entity/domain/product/product.entity';
 import { ProductRepository } from 'src/entity/domain/product/product.repository';
 import { Stock } from 'src/entity/domain/stock/stock.entity';
 import { StockRepository } from 'src/entity/domain/stock/stock.repository';
+import { DomainException } from 'src/entity/exceptions/domain.exception';
 import { createInMemoryTest } from 'test/util/create-in-memory-test';
 
 describe('OrderService', () => {
@@ -175,7 +176,7 @@ describe('OrderService', () => {
 
     // then
     await expect(action).rejects.toThrowError(
-      new Error('재고가 부족한 상품이 있습니다.'),
+      new DomainException('재고가 부족한 상품이 있습니다.'),
     );
   });
 

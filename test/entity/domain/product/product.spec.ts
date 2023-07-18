@@ -1,6 +1,7 @@
 import { ProductSellingStatus } from 'src/entity/domain/product/product-selling-status';
 import { ProductType } from 'src/entity/domain/product/product-type';
 import { Product } from 'src/entity/domain/product/product.entity';
+import { DomainException } from 'src/entity/exceptions/domain.exception';
 
 describe('Product', () => {
   it('상품 가격은 0원보다 커야 한다', () => {
@@ -18,6 +19,8 @@ describe('Product', () => {
       });
 
     // then
-    expect(action).toThrowError(new Error('상품 가격은 0원보다 커야 합니다.'));
+    expect(action).toThrowError(
+      new DomainException('상품 가격은 0원보다 커야 합니다.'),
+    );
   });
 });

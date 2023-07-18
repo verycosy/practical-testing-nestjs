@@ -1,5 +1,6 @@
 import { Column, Entity } from 'typeorm';
 import { BaseTimeEntity } from 'src/entity/base-time-entity';
+import { DomainException } from 'src/entity/exceptions/domain.exception';
 
 @Entity()
 export class Stock extends BaseTimeEntity {
@@ -26,7 +27,7 @@ export class Stock extends BaseTimeEntity {
 
   deductQuantity(quantity: number) {
     if (this.isQuantityLessThan(quantity)) {
-      throw new Error('차감할 재고 수량이 없습니다.');
+      throw new DomainException('차감할 재고 수량이 없습니다.');
     }
 
     this.mutable.quantity -= quantity;

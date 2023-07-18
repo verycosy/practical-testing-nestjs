@@ -1,4 +1,5 @@
 import { Stock } from 'src/entity/domain/stock/stock.entity';
+import { DomainException } from 'src/entity/exceptions/domain.exception';
 
 describe('Stock', () => {
   it('재고의 수량이 제공된 수량보다 작은지 확인한다', () => {
@@ -34,6 +35,8 @@ describe('Stock', () => {
     const action = () => stock.deductQuantity(quantity);
 
     // then
-    expect(action).toThrowError(new Error('차감할 재고 수량이 없습니다.'));
+    expect(action).toThrowError(
+      new DomainException('차감할 재고 수량이 없습니다.'),
+    );
   });
 });

@@ -8,6 +8,7 @@ import { ProductRepository } from 'src/entity/domain/product/product.repository'
 import { Stock } from 'src/entity/domain/stock/stock.entity';
 import { StockRepository } from 'src/entity/domain/stock/stock.repository';
 import { Order } from 'src/entity/domain/order/order.entity';
+import { DomainException } from 'src/entity/exceptions/domain.exception';
 
 @Injectable()
 export class OrderService {
@@ -57,7 +58,7 @@ export class OrderService {
       const quantity = productCoutingMap.get(stockProductNumber) ?? 0;
 
       if (!stock || stock.isQuantityLessThan(quantity)) {
-        throw new Error('재고가 부족한 상품이 있습니다.');
+        throw new DomainException('재고가 부족한 상품이 있습니다.');
       }
 
       stock.deductQuantity(quantity);
