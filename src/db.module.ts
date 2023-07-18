@@ -1,6 +1,6 @@
 import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   DataSource,
   DataSourceOptions,
@@ -21,61 +21,10 @@ import {
 } from 'typeorm-transactional';
 import { BaseRepository } from './entity/base.repository';
 import { CUSTOM_REPOSITORY_TOKEN } from './entity/decorators/custom-repository.decorator';
-
-type NODE_ENV = 'test' | 'local' | 'production';
-interface TestEnvOption {
-  isTestEnv: boolean;
-}
+import { getTransactionalContext } from 'typeorm-transactional/dist/common';
 
 @Global()
-@Module({
-  imports: [
-    TypeOrmModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (
-        configService: ConfigService,
-      ): TypeOrmModuleOptions & TestEnvOption => {
-        const env = configService.get('NODE_ENV') as NODE_ENV;
-        const isTestEnv = env === 'test';
-
-        return {
-          type: 'postgres',
-          port: Number(configService.get<string>('DB_PORT')),
-          host: configService.get<string>('DB_HOST'),
-          username: configService.get<string>('DB_USERNAME'),
-          password: configService.get<string>('DB_PASSWORD'),
-          database: configService.get<string>('DB_NAME'),
-          autoLoadEntities: true,
-          entitySkipConstructor: true,
-          namingStrategy: new SnakeNamingStrategy(),
-          dropSchema: false,
-          logging: true,
-          synchronize: isTestEnv,
-          entities: [join(__dirname, '/**/*.entity{.ts,.js}')],
-          isTestEnv,
-        };
-      },
-      dataSourceFactory: async (
-        options?: DataSourceOptions & Partial<TestEnvOption>,
-      ) => {
-        if (!options) {
-          throw new Error('Empty DataSourceOptions');
-        }
-
-        const { isTestEnv, ...rest } = options;
-
-        const dataSource = isTestEnv
-          ? DBModule.createInMemoryDataSource(rest)
-          : new DataSource(rest);
-
-        deleteDataSourceByName('default');
-        addTransactionalDataSource(dataSource);
-
-        return await dataSource.initialize();
-      },
-    }),
-  ],
-})
+@Module({})
 export class DBModule {
   private static createInMemoryDataSource(options: DataSourceOptions) {
     const db = newDb();
@@ -118,14 +67,57 @@ export class DBModule {
     });
   }
 
-  static forRoot(): DynamicModule {
-    initializeTransactionalContext();
+  static forRoot({ useInMemoryDB }: DBModuleOptions): DynamicModule {
+    if (!getTransactionalContext()) {
+      initializeTransactionalContext();
+    }
+
     const providers = DBModule.getCustomRepositoryProviders();
 
     return {
       module: DBModule,
+      imports: [
+        TypeOrmModule.forRootAsync({
+          inject: [ConfigService],
+          useFactory: (configService: ConfigService) => {
+            return {
+              type: 'postgres',
+              port: Number(configService.get<string>('DB_PORT')),
+              host: configService.get<string>('DB_HOST'),
+              username: configService.get<string>('DB_USERNAME'),
+              password: configService.get<string>('DB_PASSWORD'),
+              database: configService.get<string>('DB_NAME'),
+              autoLoadEntities: true,
+              entitySkipConstructor: true,
+              namingStrategy: new SnakeNamingStrategy(),
+              dropSchema: false,
+              logging: true,
+              synchronize: useInMemoryDB,
+              entities: [join(__dirname, '/**/*.entity{.ts,.js}')],
+            };
+          },
+          dataSourceFactory: async (options) => {
+            if (!options) {
+              throw new Error('Empty DataSourceOptions');
+            }
+
+            const dataSource = useInMemoryDB
+              ? DBModule.createInMemoryDataSource(options)
+              : new DataSource(options);
+
+            deleteDataSourceByName('default');
+            addTransactionalDataSource(dataSource);
+
+            return await dataSource.initialize();
+          },
+        }),
+      ],
       providers,
       exports: providers,
     };
   }
+}
+
+export interface DBModuleOptions {
+  useInMemoryDB: boolean;
 }

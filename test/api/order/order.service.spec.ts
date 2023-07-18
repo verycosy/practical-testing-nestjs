@@ -1,13 +1,12 @@
 import { LocalDateTime } from '@js-joda/core';
-import { Test } from '@nestjs/testing';
 import { OrderService } from 'src/entity/domain/order/order.service';
-import { CoreModule } from 'src/core.module';
 import { ProductSellingStatus } from 'src/entity/domain/product/product-selling-status';
 import { ProductType } from 'src/entity/domain/product/product-type';
 import { Product } from 'src/entity/domain/product/product.entity';
 import { ProductRepository } from 'src/entity/domain/product/product.repository';
 import { Stock } from 'src/entity/domain/stock/stock.entity';
 import { StockRepository } from 'src/entity/domain/stock/stock.repository';
+import { createInMemoryTest } from 'test/util/create-in-memory-test';
 
 describe('OrderService', () => {
   let orderService: OrderService;
@@ -15,8 +14,7 @@ describe('OrderService', () => {
   let stockRepository: StockRepository;
 
   beforeEach(async () => {
-    const module = await Test.createTestingModule({
-      imports: [CoreModule],
+    const module = await createInMemoryTest({
       providers: [OrderService],
     }).compile();
 

@@ -5,7 +5,12 @@ import { ApiSetupModule } from './api-setup.module';
 import { OrderApiModule } from './api/order/order-api.module';
 
 @Module({
-  imports: [CoreModule, ApiSetupModule, ProductApiModule, OrderApiModule],
+  imports: [
+    CoreModule.forRoot(),
+    ApiSetupModule,
+    ProductApiModule,
+    OrderApiModule,
+  ],
   controllers: [],
   providers: [],
 })

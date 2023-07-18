@@ -1,19 +1,17 @@
-import { Test } from '@nestjs/testing';
 import { ProductService } from 'src/entity/domain/product/product.service';
-import { CoreModule } from 'src/core.module';
 import { ProductNumberFactory } from 'src/entity/domain/product/product-number-factory';
 import { ProductRepository } from 'src/entity/domain/product/product.repository';
 import { ProductType } from 'src/entity/domain/product/product-type';
 import { ProductSellingStatus } from 'src/entity/domain/product/product-selling-status';
 import { Product } from 'src/entity/domain/product/product.entity';
+import { createInMemoryTest } from 'test/util/create-in-memory-test';
 
 describe('ProductService', () => {
   let productService: ProductService;
   let productRepository: ProductRepository;
 
   beforeEach(async () => {
-    const module = await Test.createTestingModule({
-      imports: [CoreModule],
+    const module = await createInMemoryTest({
       providers: [ProductService, ProductNumberFactory],
     }).compile();
 

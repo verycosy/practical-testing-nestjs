@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource, Entity } from 'typeorm';
 import { BaseTimeEntity } from 'src/entity/base-time-entity';
 import { ChronoUnit } from '@js-joda/core';
 import { Injectable } from '@nestjs/common';
 import { TestUtil } from '../util/test-util';
-import { CoreModule } from 'src/core.module';
 import { BaseRepository } from 'src/entity/base.repository';
+import { createInMemoryTest } from 'test/util/create-in-memory-test';
 
 @Entity()
 class TestEntity extends BaseTimeEntity {}
@@ -19,8 +19,8 @@ describe('BaseTimeEntity 동작 확인', () => {
   let module: TestingModule;
 
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [CoreModule, TypeOrmModule.forFeature([TestEntity])],
+    module = await createInMemoryTest({
+      imports: [TypeOrmModule.forFeature([TestEntity])],
       providers: [
         {
           inject: [DataSource],

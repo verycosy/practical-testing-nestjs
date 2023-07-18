@@ -1,21 +1,20 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { CoreModule } from 'src/core.module';
 import { ApiSetupModule } from 'src/api-setup.module';
 import { ProductApiModule } from 'src/api/product/product-api.module';
 import { ProductSellingStatus } from 'src/entity/domain/product/product-selling-status';
 import { ProductType } from 'src/entity/domain/product/product-type';
+import { createInMemoryTest } from 'test/util/create-in-memory-test';
 
 describe('ProductController (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [CoreModule, ApiSetupModule, ProductApiModule],
+    const module = await createInMemoryTest({
+      imports: [ApiSetupModule, ProductApiModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
+    app = module.createNestApplication();
     await app.init();
   });
 

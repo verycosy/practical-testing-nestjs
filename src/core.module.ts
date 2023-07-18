@@ -1,13 +1,22 @@
-import { Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { DBModule } from './db.module';
+import { DBModule, DBModuleOptions } from './db.module';
 
-@Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    DBModule.forRoot(),
-  ],
-})
-export class CoreModule {}
+@Module({})
+export class CoreModule {
+  static forRoot(
+    options: CoreModuleOptions = { useInMemoryDB: false },
+  ): DynamicModule {
+    return {
+      module: CoreModule,
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+        }),
+        DBModule.forRoot(options),
+      ],
+    };
+  }
+}
+
+interface CoreModuleOptions extends DBModuleOptions {}

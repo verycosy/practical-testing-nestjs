@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Sample } from './sample.entity';
 import { SampleRepository } from './sample.repository';
@@ -14,17 +14,17 @@ import {
   Not,
 } from 'typeorm';
 import { LocalDateTime } from '@js-joda/core';
-import { CoreModule } from 'src/core.module';
 import { DateTimeUtil } from 'src/util/date-time-util';
 import { SampleStatus } from './sample-status';
+import { createInMemoryTest } from 'test/util/create-in-memory-test';
 
 describe('SampleRepository', () => {
   let sampleRepository: SampleRepository;
   let module: TestingModule;
 
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [CoreModule, TypeOrmModule.forFeature([Sample])],
+    module = await createInMemoryTest({
+      imports: [TypeOrmModule.forFeature([Sample])],
       providers: [
         {
           inject: [DataSource],

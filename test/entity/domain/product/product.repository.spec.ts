@@ -1,17 +1,14 @@
-import { Test } from '@nestjs/testing';
-import { CoreModule } from 'src/core.module';
 import { ProductSellingStatus } from 'src/entity/domain/product/product-selling-status';
 import { ProductType } from 'src/entity/domain/product/product-type';
 import { Product } from 'src/entity/domain/product/product.entity';
 import { ProductRepository } from 'src/entity/domain/product/product.repository';
+import { createInMemoryTest } from 'test/util/create-in-memory-test';
 
 describe('ProductRepository', () => {
   let productRepository: ProductRepository;
 
   beforeEach(async () => {
-    const module = await Test.createTestingModule({
-      imports: [CoreModule],
-    }).compile();
+    const module = await createInMemoryTest({}).compile();
 
     productRepository = module.get(ProductRepository);
   });
