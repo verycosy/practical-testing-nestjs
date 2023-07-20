@@ -43,7 +43,7 @@ describe('OrderService', () => {
 
     // then
     expect(order).toMatchObject({
-      id: expect.any(Number),
+      id: expect.any(String),
       totalPrice: 4000,
       registeredDateTime,
       products: [
@@ -78,7 +78,7 @@ describe('OrderService', () => {
 
     // then
     expect(orderResponse).toMatchObject({
-      id: expect.any(Number),
+      id: expect.any(String),
       totalPrice: 2000,
       registeredDateTime,
       products: [
@@ -117,7 +117,7 @@ describe('OrderService', () => {
 
     // then
     expect(orderResponse).toMatchObject({
-      id: expect.any(Number),
+      id: expect.any(String),
       totalPrice: 10000,
       registeredDateTime: registeredDateTime,
       products: [

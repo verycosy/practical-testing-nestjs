@@ -23,7 +23,7 @@ export class ProductController {
   })
   @Patch('/:id')
   async updateProduct(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() body: UpdateProductPriceRequest,
   ) {
     const product = await this.productSerivce.updateProduct(id, body.price);

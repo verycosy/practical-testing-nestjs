@@ -107,29 +107,35 @@ describe('ProductRepository', () => {
   it('가장 마지막으로 저장한 상품의 상품번호를 읽어온다.', async () => {
     // given
     const targetProductNumber = '003';
+    const products = [
+      createProduct(
+        '001',
+        ProductType.HANDMADE,
+        ProductSellingStatus.SELLING,
+        '아메리카노',
+        4000,
+      ),
+      createProduct(
+        '002',
+        ProductType.HANDMADE,
+        ProductSellingStatus.HOLD,
+        '카페라떼',
+        4500,
+      ),
+      createProduct(
+        targetProductNumber,
+        ProductType.HANDMADE,
+        ProductSellingStatus.STOP_SELLING,
+        '팥빙수',
+        7000,
+      ),
+    ];
 
-    const product1 = createProduct(
-      '001',
-      ProductType.HANDMADE,
-      ProductSellingStatus.SELLING,
-      '아메리카노',
-      4000,
-    );
-    const product2 = createProduct(
-      '002',
-      ProductType.HANDMADE,
-      ProductSellingStatus.HOLD,
-      '카페라떼',
-      4500,
-    );
-    const product3 = createProduct(
-      targetProductNumber,
-      ProductType.HANDMADE,
-      ProductSellingStatus.STOP_SELLING,
-      '팥빙수',
-      7000,
-    );
-    await productRepository.save([product1, product2, product3]);
+    // NOTE: 순번 보장
+    // await productRepository.save([product1, product2, product3]);
+    for (const product of products) {
+      await productRepository.save(product);
+    }
 
     // when
     const latestProductNumber =

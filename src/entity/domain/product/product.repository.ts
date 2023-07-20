@@ -26,7 +26,7 @@ export class ProductRepository extends BaseRepository<Product> {
 
   async findLatestProductNumber() {
     const result = await this.manager.query<{ product_number: string }[]>(
-      `SELECT p.product_number FROM product p ORDER BY id DESC LIMIT 1`,
+      `SELECT p.product_number FROM product p ORDER BY p.created_at DESC LIMIT 1`,
     );
 
     if (result.length) {

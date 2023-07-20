@@ -7,7 +7,7 @@ import { DateTimeUtil } from 'src/util/date-time-util';
 
 export class OrderResponse {
   @ApiProperty()
-  readonly id!: number;
+  readonly id!: string;
 
   @ApiProperty()
   readonly totalPrice!: number;

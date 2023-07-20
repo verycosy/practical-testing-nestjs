@@ -43,7 +43,7 @@ describe('ProductService', () => {
     const products = await productRepository.find({ order: { id: 'ASC' } });
     expect(products).toMatchObject<Partial<Product>[]>([
       {
-        id: expect.any(Number),
+        id: expect.any(String),
         productNumber: '001',
         type: ProductType.HANDMADE,
         sellingStatus: ProductSellingStatus.SELLING,
@@ -83,10 +83,12 @@ describe('ProductService', () => {
       price: 5000,
     });
 
-    const products = await productRepository.find({ order: { id: 'ASC' } });
+    const products = await productRepository.find({
+      order: { createdAt: 'ASC' },
+    });
     expect(products).toMatchObject<Partial<Product>[]>([
       {
-        id: expect.any(Number),
+        id: expect.any(String),
         productNumber: '001',
         type: ProductType.HANDMADE,
         sellingStatus: ProductSellingStatus.SELLING,
@@ -94,7 +96,7 @@ describe('ProductService', () => {
         price: 4000,
       },
       {
-        id: expect.any(Number),
+        id: expect.any(String),
         productNumber: '002',
         type: ProductType.HANDMADE,
         sellingStatus: ProductSellingStatus.SELLING,

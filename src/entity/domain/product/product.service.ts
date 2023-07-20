@@ -25,7 +25,7 @@ export class ProductService {
     return await this.productRepository.save(product);
   }
 
-  async updateProduct(id: number, newPrice: number) {
+  async updateProduct(id: string, newPrice: number) {
     const product = await this.productRepository.findOneOrFail({
       where: {
         id,

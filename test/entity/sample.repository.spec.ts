@@ -57,8 +57,10 @@ describe('SampleRepository', () => {
       const result = await sampleRepository.save(sample);
 
       // then
-      expect(result.id).toBe(1);
-      expect(result.text).toBe('hello');
+      expect(result).toMatchObject({
+        id: expect.any(String),
+        text: 'hello',
+      });
 
       const samples = await sampleRepository.find();
       expect(samples).toHaveLength(1);
