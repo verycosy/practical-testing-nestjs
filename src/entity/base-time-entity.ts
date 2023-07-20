@@ -22,8 +22,10 @@ export abstract class BaseTimeEntity extends BaseIdEntity {
 
   @BeforeInsert()
   private _insert() {
-    this.mutable.createdAt = LocalDateTime.now();
-    this.mutable.updatedAt = LocalDateTime.now();
+    const now = LocalDateTime.now();
+
+    this.mutable.createdAt = now;
+    this.mutable.updatedAt = now;
   }
 
   @BeforeUpdate()
