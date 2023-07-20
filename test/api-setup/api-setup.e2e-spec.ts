@@ -37,6 +37,17 @@ describe('ApiSetup (e2e)', () => {
   });
 
   describe('요청 실패 시', () => {
+    it('DomainException이면 상태 코드 422로 실패 응답을 반환한다', () => {
+      return request(app.getHttpServer())
+        .get('/domain-exception')
+        .expect(422)
+        .expect({
+          statusCode: 422,
+          message: '도메인 예외',
+          data: null,
+        });
+    });
+
     it('커스텀 Exception이면 상태 코드 500으로 실패 응답을 반환한다', () => {
       return request(app.getHttpServer())
         .get('/custom-exception')

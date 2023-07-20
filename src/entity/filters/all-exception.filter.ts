@@ -6,7 +6,7 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import { HttpAdapterHost } from '@nestjs/core';
+import { Response } from 'express';
 import { HttpResponse } from 'src/api/http.response';
 
 interface HttpExceptionResponse {
@@ -18,8 +18,6 @@ interface HttpExceptionResponse {
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionFilter.name);
-
-  constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
   static getStatusCodeAndMessage(err: Error) {
     if (err instanceof HttpException) {
@@ -35,17 +33,18 @@ export class AllExceptionFilter implements ExceptionFilter {
   catch(exception: Error, host: ArgumentsHost): void {
     this.logger.error(exception, exception.stack);
 
-    const { httpAdapter } = this.httpAdapterHost;
-    const ctx = host.switchToHttp();
+    const context = host.switchToHttp();
+    const response = context.getResponse<Response>();
 
     const { statusCode, message } =
       AllExceptionFilter.getStatusCodeAndMessage(exception);
-    const responseBody = new HttpResponse({
-      statusCode,
-      message,
-      data: null,
-    });
 
-    httpAdapter.reply(ctx.getResponse(), responseBody, statusCode);
+    response.status(statusCode).json(
+      new HttpResponse({
+        statusCode,
+        message,
+        data: null,
+      }),
+    );
   }
 }

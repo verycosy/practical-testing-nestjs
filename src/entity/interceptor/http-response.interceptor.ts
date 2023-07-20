@@ -3,10 +3,12 @@ import {
   ExecutionContext,
   Injectable,
   NestInterceptor,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { Observable, map } from 'rxjs';
+import { Observable, catchError, map, throwError } from 'rxjs';
 import { HttpResponse } from 'src/api/http.response';
+import { DomainException } from '../exceptions/domain.exception';
 
 @Injectable()
 export class HttpResponseInterceptor<T>
@@ -27,6 +29,17 @@ export class HttpResponseInterceptor<T>
             data,
           }),
       ),
+      catchError((err: Error) => {
+        return throwError(() => {
+          if (err.name === DomainException.name) {
+            return new UnprocessableEntityException(err.message, {
+              cause: err,
+            });
+          }
+
+          return err;
+        });
+      }),
     );
   }
 }

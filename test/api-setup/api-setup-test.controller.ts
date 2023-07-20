@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { ApiSetupTestException } from './api-setup-test.exception';
 import { ApiSetupTestRequest } from './api-setup-test.request';
+import { DomainException } from 'src/entity/exceptions/domain.exception';
 
 @Controller()
 export class ApiSetupTestController {
@@ -19,6 +20,11 @@ export class ApiSetupTestController {
   @Post('/success')
   postSuccess() {
     return 'Hello World!';
+  }
+
+  @Get('/domain-exception')
+  domainException() {
+    throw new DomainException('도메인 예외');
   }
 
   @Get('/custom-exception')
