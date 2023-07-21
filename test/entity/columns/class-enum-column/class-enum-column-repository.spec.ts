@@ -1,7 +1,7 @@
 import { TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { And, DataSource, Entity, Equal, In, IsNull, Not } from 'typeorm';
-import { BaseTimeEntity } from 'src/entity/base-time-entity';
+import { BaseIdEntity } from 'src/entity/base-id-entity';
 import { ClassEnumColumn } from 'src/entity/columns/class-enum.column';
 import { TestStatus } from './test-status';
 import { CustomRepository } from 'src/entity/decorators/custom-repository.decorator';
@@ -10,7 +10,7 @@ import { createInMemoryTest } from 'test/util/create-in-memory-test';
 import { DBModule } from 'src/db.module';
 
 @Entity()
-class ClassEnumColumnEntity extends BaseTimeEntity {
+class ClassEnumColumnEntity extends BaseIdEntity {
   constructor(status: TestStatus) {
     super();
 

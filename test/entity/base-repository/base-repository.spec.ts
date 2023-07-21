@@ -3,12 +3,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Column, DataSource, Entity, ILike } from 'typeorm';
 import { createInMemoryTest } from 'test/util/create-in-memory-test';
 import { DBModule } from 'src/db.module';
-import { BaseTimeEntity } from 'src/entity/base-time-entity';
+import { BaseIdEntity } from 'src/entity/base-id-entity';
 import { CustomRepository } from 'src/entity/decorators/custom-repository.decorator';
 import { BaseRepository as AbstractBaseRepository } from 'src/entity/base.repository';
 
 @Entity()
-class TestEntity extends BaseTimeEntity {
+class TestEntity extends BaseIdEntity {
   @Column()
   readonly text: string;
 
