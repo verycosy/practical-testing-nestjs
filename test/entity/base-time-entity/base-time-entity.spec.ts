@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource, Entity } from 'typeorm';
 import { BaseTimeEntity } from 'src/entity/base-time-entity';
 import { ChronoUnit } from '@js-joda/core';
-import { TestUtil } from '../util/test-util';
+import { TestUtil } from '../../util/test-util';
 import { BaseRepository } from 'src/entity/base.repository';
 import { createInMemoryTest } from 'test/util/create-in-memory-test';
 import { DBModule } from 'src/db.module';
@@ -46,9 +46,9 @@ describe('BaseTimeEntity 동작 확인', () => {
     it('save 메서드로 갱신된다', async () => {
       // given
       const sample = new TestEntity();
+      await testRepository.save(sample);
 
       // when
-      await testRepository.save(sample);
       await TestUtil.sleep(100);
       const { createdAt, updatedAt, deletedAt } = await testRepository.save(
         sample,
@@ -62,12 +62,11 @@ describe('BaseTimeEntity 동작 확인', () => {
     it('update 메서드에 인스턴스를 인수로 넘겼을 때 갱신된다', async () => {
       // given
       const sample = new TestEntity();
-
-      // when
       const saved = await testRepository.save(sample);
 
+      // when
       await TestUtil.sleep(100);
-      await testRepository.update({ id: saved.id }, saved); // NOTE: partialEntity 파라미터에 인스턴스가 아닌 json을 넣으면 당연히 @BeforeUpdate 동작X
+      await testRepository.update({ id: saved.id }, saved);
       const [{ createdAt, updatedAt, deletedAt }] = await testRepository.find();
 
       // then
