@@ -1,9 +1,8 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ProductService } from '../../entity/domain/product/product.service';
-import { CreateProductRequest } from './request/create-product.request';
 import { ProductResponse } from './product.response';
 import { ApiHttpResponse } from 'src/entity/decorators/api-http-response.decorator';
-import { UpdateProductPriceRequest } from './request/update-product-price.request';
+import * as ProductApiRequest from './request';
 
 @Controller('/products')
 export class ProductController {
@@ -13,7 +12,7 @@ export class ProductController {
     type: ProductResponse,
   })
   @Post('/')
-  async createProduct(@Body() body: CreateProductRequest) {
+  async createProduct(@Body() body: ProductApiRequest.Create) {
     const product = await this.productSerivce.createProduct(body);
     return ProductResponse.of(product);
   }
@@ -24,7 +23,7 @@ export class ProductController {
   @Patch('/:id')
   async updateProduct(
     @Param('id') id: string,
-    @Body() body: UpdateProductPriceRequest,
+    @Body() body: ProductApiRequest.UpdatePrice,
   ) {
     const product = await this.productSerivce.updateProduct(id, body.price);
     return ProductResponse.of(product);
