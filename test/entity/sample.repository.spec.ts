@@ -45,54 +45,10 @@ describe('SampleRepository', () => {
     await module.get(DataSource).destroy();
   });
 
-  // TODO:
-  describe('BaseRepository', () => {
-    it('기본 repository 메서드(find, save) 정상 작동', async () => {
-      // given
-      const sample = new Sample({
-        text: 'hello',
-      });
-
-      // when
-      const result = await sampleRepository.save(sample);
-
-      // then
-      expect(result).toMatchObject({
-        id: expect.any(String),
-        text: 'hello',
-      });
-
-      const samples = await sampleRepository.find();
-      expect(samples).toHaveLength(1);
-    });
-
-    it('기본 레포지토리 확장 메서드', async () => {
-      // given
-      const sample1 = new Sample({
-        text: 'real sample1',
-      });
-      const sample2 = new Sample({
-        text: 'real sample2',
-      });
-      const sample3 = new Sample({
-        text: 'fake sample1',
-      });
-      await sampleRepository.save([sample1, sample2, sample3]);
-
-      // when
-      const result = await sampleRepository.findContainsText('real');
-
-      // then
-      expect(result).toHaveLength(2);
-    });
-  });
-
   describe('LocalDateTimeColumn', () => {
     it('Entity<->DB', async () => {
       // given
-      const sample = new Sample({
-        text: 'hello',
-      });
+      const sample = new Sample({});
 
       // when
       const result = await sampleRepository.save(sample);
@@ -108,24 +64,18 @@ describe('SampleRepository', () => {
   describe('find 메서드와 FindOperator', () => {
     const createFixture = async () => {
       const sample1 = new Sample({
-        text: 'sample1',
         checkedAt: LocalDateTime.of(2023, 7, 4, 23, 59, 59),
       });
       const sample2 = new Sample({
-        text: 'sample2',
         checkedAt: LocalDateTime.of(2023, 7, 5, 0, 0, 0),
       });
       const sample3 = new Sample({
-        text: 'sample3',
         checkedAt: LocalDateTime.of(2023, 7, 5, 23, 59, 59),
       });
       const sample4 = new Sample({
-        text: 'sample4',
         checkedAt: LocalDateTime.of(2023, 7, 6, 0, 0, 0),
       });
-      const sample5 = new Sample({
-        text: 'sample5',
-      });
+      const sample5 = new Sample({});
       await sampleRepository.save([
         sample1,
         sample2,
@@ -258,24 +208,18 @@ describe('SampleRepository', () => {
     // given
     const createFixture = async () => {
       const sample1 = new Sample({
-        text: 'sample1',
         checkedAt: LocalDateTime.of(2023, 7, 4, 23, 59, 59),
       });
       const sample2 = new Sample({
-        text: 'sample2',
         checkedAt: LocalDateTime.of(2023, 7, 5, 0, 0, 0),
       });
       const sample3 = new Sample({
-        text: 'sample3',
         checkedAt: LocalDateTime.of(2023, 7, 5, 23, 59, 59),
       });
       const sample4 = new Sample({
-        text: 'sample4',
         checkedAt: LocalDateTime.of(2023, 7, 6, 0, 0, 0),
       });
-      const sample5 = new Sample({
-        text: 'sample5',
-      });
+      const sample5 = new Sample({});
       await sampleRepository.save([
         sample1,
         sample2,
@@ -346,7 +290,6 @@ describe('SampleRepository', () => {
     it('Entity<->DB', async () => {
       // given / when
       const sample = new Sample({
-        text: 'hello',
         status: SampleStatus.DONE,
       });
       const result = await sampleRepository.save(sample);
@@ -522,27 +465,21 @@ describe('SampleRepository', () => {
 
     const createFixture = async () => {
       const sample1 = new Sample({
-        text: 'sample1',
         status: SampleStatus.READY,
       });
       const sample2 = new Sample({
-        text: 'sample2',
         status: SampleStatus.PROGRESS,
       });
       const sample3 = new Sample({
-        text: 'sample3',
         status: SampleStatus.PROGRESS,
       });
       const sample4 = new Sample({
-        text: 'sample4',
         status: SampleStatus.DONE,
       });
       const sample5 = new Sample({
-        text: 'sample5',
         status: SampleStatus.DONE,
       });
       const sample6 = new Sample({
-        text: 'sample5',
         status: SampleStatus.DONE,
       });
       const samples = [sample1, sample2, sample3, sample4, sample5, sample6];
