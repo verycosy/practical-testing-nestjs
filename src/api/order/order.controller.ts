@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { OrderService } from '../../entity/domain/order/order.service';
-import { CreateOrderRequest } from './request/create-order.request';
+import { OrderCreateRequest } from './request/order-create.request';
 import { LocalDateTime } from '@js-joda/core';
 import { ApiTags } from '@nestjs/swagger';
 import { OrderResponse } from './order.response';
@@ -20,7 +20,7 @@ export class OrderController {
     description: '주문할 상품 목록을 찾을 수 없음',
   })
   @Post('/')
-  async createOrder(@Body() { productNumbers }: CreateOrderRequest) {
+  async createOrder(@Body() { productNumbers }: OrderCreateRequest) {
     const registeredDateTime = LocalDateTime.now();
 
     const order = await this.orderService.createOrder(

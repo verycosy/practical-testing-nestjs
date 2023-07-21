@@ -4,7 +4,7 @@ import { ProductSellingStatus } from 'src/entity/domain/product/product-selling-
 import { ProductType } from 'src/entity/domain/product/product-type';
 import { IsClassEnum } from 'src/entity/validator/is-class-enum';
 
-export class CreateProductRequest {
+export class ProductCreateRequest {
   @ApiProperty({
     enum: ProductType.keys(),
   })
