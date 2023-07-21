@@ -9,9 +9,18 @@ import {
 import { ApiSetupTestException } from './api-setup-test.exception';
 import { ApiSetupTestRequest } from './api-setup-test.request';
 import { DomainException } from 'src/entity/exceptions/domain.exception';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TestEntity } from './test-entity';
+import { v4 } from 'uuid';
 
 @Controller()
 export class ApiSetupTestController {
+  constructor(
+    @InjectRepository(TestEntity)
+    private readonly repository: Repository<TestEntity>,
+  ) {}
+
   @Get('/success')
   getSuccess() {
     return 'Hello World!';
@@ -20,6 +29,15 @@ export class ApiSetupTestController {
   @Post('/success')
   postSuccess() {
     return 'Hello World!';
+  }
+
+  @Get('/entity-not-found-error')
+  async entityNotFoundError() {
+    await this.repository.findOneOrFail({
+      where: {
+        id: v4(),
+      },
+    });
   }
 
   @Get('/domain-exception')

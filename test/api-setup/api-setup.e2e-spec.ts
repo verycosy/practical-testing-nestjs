@@ -1,15 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { ApiSetupModule } from 'src/api-setup.module';
 import { ApiSetupTestController } from './api-setup-test.controller';
+import { createInMemoryTest } from 'test/util/create-in-memory-test';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { TestEntity } from './test-entity';
 
 describe('ApiSetup (e2e)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [ApiSetupModule],
+    const moduleFixture = await createInMemoryTest({
+      imports: [ApiSetupModule, TypeOrmModule.forFeature([TestEntity])],
       controllers: [ApiSetupTestController],
     }).compile();
 
@@ -44,6 +46,17 @@ describe('ApiSetup (e2e)', () => {
         .expect({
           statusCode: 422,
           message: '도메인 예외',
+          data: null,
+        });
+    });
+
+    it('EntityNotFoundError이면 상태 코드 404로 실패 응답을 반환한다', () => {
+      return request(app.getHttpServer())
+        .get('/entity-not-found-error')
+        .expect(404)
+        .expect({
+          statusCode: 404,
+          message: '데이터를 찾을 수 없습니다.',
           data: null,
         });
     });
