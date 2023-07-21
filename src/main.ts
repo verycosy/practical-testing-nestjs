@@ -19,4 +19,11 @@ async function bootstrap() {
 
   await app.listen(3000);
 }
-bootstrap();
+
+bootstrap()
+  .then(() => {
+    // TODO: 서버 실행 성공 로그
+  })
+  .catch((err) => {
+    // TODO: 우아하게 종료 + 프로세스 재시작
+  });
