@@ -1,11 +1,10 @@
 import { TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Sample } from './sample.entity';
-import { SampleRepository } from './sample.repository';
 import {
   And,
   Between,
   DataSource,
+  Entity,
   Equal,
   IsNull,
   LessThanOrEqual,
@@ -16,9 +15,30 @@ import { LocalDateTime } from '@js-joda/core';
 import { DateTimeUtil } from 'src/util/date-time-util';
 import { createInMemoryTest } from 'test/util/create-in-memory-test';
 import { DBModule } from 'src/db.module';
+import { CustomRepository } from 'src/entity/decorators/custom-repository.decorator';
+import { BaseRepository } from 'src/entity/base.repository';
+import { LocalDateTimeColumn } from 'src/entity/columns/local-date-time.column';
+import { BaseTimeEntity } from 'src/entity/base-time-entity';
 
-describe('SampleRepository', () => {
-  let sampleRepository: SampleRepository;
+@Entity()
+export class LocalDateTimeEntity extends BaseTimeEntity {
+  @LocalDateTimeColumn({
+    nullable: true,
+  })
+  checkedAt: LocalDateTime | null;
+
+  constructor(checkedAt?: LocalDateTime) {
+    super();
+
+    this.checkedAt = checkedAt ?? null;
+  }
+}
+
+@CustomRepository(LocalDateTimeEntity)
+export class LocalDateTimeColumnRepository extends BaseRepository<LocalDateTimeEntity> {}
+
+describe('LocalDateTimeColumnRepository', () => {
+  let repository: LocalDateTimeColumnRepository;
   let module: TestingModule;
 
   beforeAll(async () => {
@@ -26,69 +46,44 @@ describe('SampleRepository', () => {
       imports: [
         DBModule.forRoot({
           useInMemoryDB: true,
-          customRepositories: [SampleRepository],
+          customRepositories: [LocalDateTimeColumnRepository],
         }),
-        TypeOrmModule.forFeature([Sample]),
+        TypeOrmModule.forFeature([LocalDateTimeEntity]),
       ],
     }).compile();
 
-    sampleRepository = module.get(SampleRepository);
+    repository = module.get(LocalDateTimeColumnRepository);
   });
 
   afterEach(async () => {
-    await sampleRepository.clear();
+    await repository.clear();
   });
 
   afterAll(async () => {
     await module.get(DataSource).destroy();
   });
 
-  describe('LocalDateTimeColumn', () => {
-    it('Entity<->DB', async () => {
-      // given
-      const sample = new Sample({});
+  it('Entity<->DB', async () => {
+    // given
+    const entity = new LocalDateTimeEntity();
 
-      // when
-      const result = await sampleRepository.save(sample);
+    // when
+    const result = await repository.save(entity);
 
-      // then
-      expect(result.checkedAt).toBeNull();
-      expect(result.createdAt).toBeInstanceOf(LocalDateTime);
-      expect(result.updatedAt).toBeInstanceOf(LocalDateTime);
-      expect(result.deletedAt).toBeNull();
-    });
+    // then
+    expect(result.checkedAt).toBeNull();
+    expect(result.createdAt).toBeInstanceOf(LocalDateTime);
+    expect(result.updatedAt).toBeInstanceOf(LocalDateTime);
+    expect(result.deletedAt).toBeNull();
   });
 
   describe('find 메서드와 FindOperator', () => {
-    const createFixture = async () => {
-      const sample1 = new Sample({
-        checkedAt: LocalDateTime.of(2023, 7, 4, 23, 59, 59),
-      });
-      const sample2 = new Sample({
-        checkedAt: LocalDateTime.of(2023, 7, 5, 0, 0, 0),
-      });
-      const sample3 = new Sample({
-        checkedAt: LocalDateTime.of(2023, 7, 5, 23, 59, 59),
-      });
-      const sample4 = new Sample({
-        checkedAt: LocalDateTime.of(2023, 7, 6, 0, 0, 0),
-      });
-      const sample5 = new Sample({});
-      await sampleRepository.save([
-        sample1,
-        sample2,
-        sample3,
-        sample4,
-        sample5,
-      ]);
-    };
-
     it('equal', async () => {
       // given
-      await createFixture();
+      await createFixture(repository);
 
       // when
-      const result = await sampleRepository.find({
+      const result = await repository.find({
         where: {
           checkedAt: Equal(LocalDateTime.of(2023, 7, 5, 0, 0, 0)),
         },
@@ -100,10 +95,10 @@ describe('SampleRepository', () => {
 
     it('more than equal', async () => {
       // given
-      await createFixture();
+      await createFixture(repository);
 
       // when
-      const result = await sampleRepository.find({
+      const result = await repository.find({
         where: {
           checkedAt: MoreThanOrEqual(LocalDateTime.of(2023, 7, 5, 0, 0, 0)),
         },
@@ -115,10 +110,10 @@ describe('SampleRepository', () => {
 
     it('between', async () => {
       // given
-      await createFixture();
+      await createFixture(repository);
 
       // when
-      const result = await sampleRepository.find({
+      const result = await repository.find({
         where: {
           checkedAt: Between(
             LocalDateTime.of(2023, 7, 5, 0, 0, 0),
@@ -133,10 +128,10 @@ describe('SampleRepository', () => {
 
     it('not between', async () => {
       // given
-      await createFixture();
+      await createFixture(repository);
 
       // when
-      const result = await sampleRepository.find({
+      const result = await repository.find({
         where: {
           checkedAt: Not(
             Between(
@@ -153,10 +148,10 @@ describe('SampleRepository', () => {
 
     it('and', async () => {
       // given
-      await createFixture();
+      await createFixture(repository);
 
       // when
-      const result = await sampleRepository.find({
+      const result = await repository.find({
         where: {
           checkedAt: And(
             MoreThanOrEqual(LocalDateTime.of(2023, 7, 5, 0, 0, 0)),
@@ -171,10 +166,10 @@ describe('SampleRepository', () => {
 
     it('null', async () => {
       // given
-      await createFixture();
+      await createFixture(repository);
 
       // when
-      const result = await sampleRepository.find({
+      const result = await repository.find({
         where: {
           checkedAt: IsNull(),
         },
@@ -186,10 +181,10 @@ describe('SampleRepository', () => {
 
     it('not null', async () => {
       // given
-      await createFixture();
+      await createFixture(repository);
 
       // when
-      const result = await sampleRepository.find({
+      const result = await repository.find({
         where: {
           checkedAt: Not(IsNull()),
         },
@@ -203,38 +198,14 @@ describe('SampleRepository', () => {
   });
 
   describe('QueryBuilder', () => {
-    // given
-    const createFixture = async () => {
-      const sample1 = new Sample({
-        checkedAt: LocalDateTime.of(2023, 7, 4, 23, 59, 59),
-      });
-      const sample2 = new Sample({
-        checkedAt: LocalDateTime.of(2023, 7, 5, 0, 0, 0),
-      });
-      const sample3 = new Sample({
-        checkedAt: LocalDateTime.of(2023, 7, 5, 23, 59, 59),
-      });
-      const sample4 = new Sample({
-        checkedAt: LocalDateTime.of(2023, 7, 6, 0, 0, 0),
-      });
-      const sample5 = new Sample({});
-      await sampleRepository.save([
-        sample1,
-        sample2,
-        sample3,
-        sample4,
-        sample5,
-      ]);
-    };
-
     // NOTE: 이건 사실상 내부적으로는 Equal(checkedAt)을 넣은 것과 같아서, FindOperator를 쓴 것과 다름 없다
     it('equal', async () => {
       // given
-      await createFixture();
+      await createFixture(repository);
       const checkedAt = LocalDateTime.of(2023, 7, 5, 0, 0, 0);
 
       // when
-      const result = await sampleRepository
+      const result = await repository
         .createQueryBuilder()
         .where({
           checkedAt,
@@ -247,10 +218,10 @@ describe('SampleRepository', () => {
 
     it('between', async () => {
       // given
-      await createFixture();
+      await createFixture(repository);
 
       // when
-      const result = await sampleRepository
+      const result = await repository
         .createQueryBuilder()
         .where({
           checkedAt: Between(
@@ -266,14 +237,14 @@ describe('SampleRepository', () => {
 
     it('between with parameter', async () => {
       // given
-      await createFixture();
+      await createFixture(repository);
       const from = DateTimeUtil.toDate(LocalDateTime.of(2023, 7, 5, 0, 0, 0));
       const to = DateTimeUtil.toDate(LocalDateTime.of(2023, 7, 5, 23, 59, 59));
 
       // when
-      const result = await sampleRepository
-        .createQueryBuilder('sample')
-        .where(`sample.checked_at BETWEEN :from AND :to`, {
+      const result = await repository
+        .createQueryBuilder('entity')
+        .where(`entity.checked_at BETWEEN :from AND :to`, {
           from,
           to,
         })
@@ -284,3 +255,20 @@ describe('SampleRepository', () => {
     });
   });
 });
+
+const createFixture = async (repository: LocalDateTimeColumnRepository) => {
+  const sample1 = new LocalDateTimeEntity(
+    LocalDateTime.of(2023, 7, 4, 23, 59, 59),
+  );
+  const sample2 = new LocalDateTimeEntity(
+    LocalDateTime.of(2023, 7, 5, 0, 0, 0),
+  );
+  const sample3 = new LocalDateTimeEntity(
+    LocalDateTime.of(2023, 7, 5, 23, 59, 59),
+  );
+  const sample4 = new LocalDateTimeEntity(
+    LocalDateTime.of(2023, 7, 6, 0, 0, 0),
+  );
+  const sample5 = new LocalDateTimeEntity();
+  await repository.save([sample1, sample2, sample3, sample4, sample5]);
+};
