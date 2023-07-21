@@ -14,7 +14,7 @@ import { DomainException } from '../exceptions/domain.exception';
 import { EntityNotFoundError } from 'typeorm';
 
 @Injectable()
-export class HttpResponseInterceptor<T>
+export class ControllerInterceptor<T>
   implements NestInterceptor<T, HttpResponse<T | null>>
 {
   intercept(
