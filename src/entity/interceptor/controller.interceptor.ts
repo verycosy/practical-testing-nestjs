@@ -2,10 +2,11 @@ import {
   CallHandler,
   ExecutionContext,
   Injectable,
+  Logger,
   NestInterceptor,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { Observable, catchError, map, throwError } from 'rxjs';
+import { Observable, catchError, map, of } from 'rxjs';
 import { HttpResponse } from 'src/api/http.response';
 import { HttpExceptionConverter } from './http-exception-converter';
 
@@ -13,6 +14,8 @@ import { HttpExceptionConverter } from './http-exception-converter';
 export class ControllerInterceptor<T>
   implements NestInterceptor<T, HttpResponse<T | null>>
 {
+  private readonly logger = new Logger(ControllerInterceptor.name);
+
   constructor(
     private readonly httpExceptionConverter: HttpExceptionConverter,
   ) {}
@@ -33,10 +36,27 @@ export class ControllerInterceptor<T>
           }),
       ),
       catchError((cause: Error) => {
-        return throwError(() => {
-          return this.httpExceptionConverter.convert(cause);
-        });
+        this.logger.error(cause, cause.stack);
+
+        const httpException = this.httpExceptionConverter.convert(cause);
+        const { statusCode, message } =
+          httpException.getResponse() as HttpExceptionResponse;
+
+        response.status(statusCode);
+        return of(
+          new HttpResponse({
+            statusCode,
+            message,
+            data: null,
+          }),
+        );
       }),
     );
   }
+}
+
+interface HttpExceptionResponse {
+  message: string | string[];
+  error: string;
+  statusCode: number;
 }

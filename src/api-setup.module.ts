@@ -3,17 +3,12 @@ import {
   Module,
   ValidationPipe,
 } from '@nestjs/common';
-import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, Reflector } from '@nestjs/core';
+import { APP_INTERCEPTOR, APP_PIPE, Reflector } from '@nestjs/core';
 import { ControllerInterceptor } from './entity/interceptor/controller.interceptor';
-import { AllExceptionFilter } from './entity/filters/all-exception.filter';
 import { HttpExceptionConverter } from './entity/interceptor/http-exception-converter';
 
 @Module({
   providers: [
-    {
-      provide: APP_FILTER,
-      useClass: AllExceptionFilter,
-    },
     {
       provide: APP_INTERCEPTOR,
       useValue: new ControllerInterceptor(new HttpExceptionConverter()),
