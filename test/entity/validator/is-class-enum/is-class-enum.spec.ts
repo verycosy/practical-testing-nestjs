@@ -8,7 +8,7 @@ describe('IsClassEnum', () => {
     it('변환할 값이 ClassEnum으로 변환 가능하면 ClassEnum으로 반환한다', () => {
       // given
       const body = {
-        status: 'wow',
+        status: 'TODO',
         statuses: ['TODO', 'PROGRESS'],
       };
 
@@ -17,6 +17,7 @@ describe('IsClassEnum', () => {
 
       // then
       expect(result).toBeInstanceOf(ClassEnumTestRequest);
+      expect(result.status).toEqual(ClassEnumTestStatus.TODO);
       expect(result.statuses).toEqual([
         ClassEnumTestStatus.TODO,
         ClassEnumTestStatus.PROGRESS,

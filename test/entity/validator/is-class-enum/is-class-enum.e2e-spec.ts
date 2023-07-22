@@ -44,7 +44,7 @@ describe('IsClassEnum (e2e)', () => {
         });
     });
 
-    it('enum 실패', () => {
+    it('enum 배열 실패', () => {
       const body = {
         status: 'WRONG',
         statuses: ['WRONG2', 'TODO'],

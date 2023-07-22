@@ -26,7 +26,7 @@ const ValidateClassEnum = (
       constraints: [clazz],
       options,
       validator: {
-        validate: (value: ClassEnum) => value instanceof clazz,
+        validate: (value: any) => value instanceof clazz,
         defaultMessage: (args) => {
           const invalidInputs = Array.isArray(args?.value)
             ? args?.value.filter((v) => !(v instanceof clazz))
