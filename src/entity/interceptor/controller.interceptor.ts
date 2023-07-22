@@ -24,6 +24,7 @@ export class ControllerInterceptor<T>
     context: ExecutionContext,
     next: CallHandler<T>,
   ): Observable<HttpResponse<T | null>> {
+    const now = Date.now();
     const response = context.switchToHttp().getResponse<Response>();
 
     return next.handle().pipe(
@@ -33,6 +34,7 @@ export class ControllerInterceptor<T>
             statusCode: response.statusCode,
             message: '',
             data,
+            elapsedTime: Date.now() - now,
           }),
       ),
       catchError((cause: Error) => {
@@ -48,6 +50,7 @@ export class ControllerInterceptor<T>
             statusCode,
             message,
             data: null,
+            elapsedTime: Date.now() - now,
           }),
         );
       }),

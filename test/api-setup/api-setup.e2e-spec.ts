@@ -34,7 +34,10 @@ describe('ApiSetup (e2e)', () => {
         statusCode: 200,
         message: '',
         data: 'Hello World!',
+        elapsedTime: expect.any(Number),
+        responsedAt: expect.any(String),
       });
+      expect(response.body.responsedAt).toHaveLength(19);
     });
 
     it('설정된 상태 코드에 맞게 성공 응답을 반환한다', async () => {
