@@ -1,5 +1,4 @@
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
 import { ApiSetupModule } from 'src/api-setup.module';
 import { ProductApiModule } from 'src/api/product/product-api.module';
 import { ProductSellingStatus } from 'src/entity/domain/product/product-selling-status';
@@ -7,6 +6,9 @@ import { ProductType } from 'src/entity/domain/product/product-type';
 import { createInMemoryTest } from 'test/util/create-in-memory-test';
 import { ProductRepository } from 'src/entity/domain/product/product.repository';
 import { Product } from 'src/entity/domain/product/product.entity';
+import { TestUtil } from 'test/util/test-util';
+
+const { getServer, expectResponse } = TestUtil;
 
 describe('ProductController (e2e)', () => {
   let app: INestApplication;
@@ -21,7 +23,7 @@ describe('ProductController (e2e)', () => {
   });
 
   describe('신규 상품 등록', () => {
-    it('등록된 신규 상품을 반환한다', () => {
+    it('등록된 신규 상품을 반환한다', async () => {
       // given
       const body = {
         type: ProductType.HANDMADE.code,
@@ -30,14 +32,14 @@ describe('ProductController (e2e)', () => {
         price: 4000,
       };
 
-      // when // then
-      return request(app.getHttpServer())
-        .post('/products')
-        .send(body)
-        .expect(201);
+      // when
+      const response = await getServer(app).post('/products').send(body);
+
+      // then
+      expectResponse(response, 201);
     });
 
-    it('상품 타입은 필수값이다.', () => {
+    it('상품 타입은 필수값이다.', async () => {
       // given
       const body = {
         sellingStatus: ProductSellingStatus.SELLING.code,
@@ -45,19 +47,18 @@ describe('ProductController (e2e)', () => {
         price: 4000,
       };
 
-      // when // then
-      return request(app.getHttpServer())
-        .post('/products')
-        .send(body)
-        .expect(400)
-        .expect({
-          statusCode: 400,
-          message: ['상품 타입은 필수입니다.'],
-          data: null,
-        });
+      // when
+      const response = await getServer(app).post('/products').send(body);
+
+      // then
+      expectResponse(response, 400, {
+        statusCode: 400,
+        message: ['상품 타입은 필수입니다.'],
+        data: null,
+      });
     });
 
-    it('상품 판매상태는 필수값이다.', () => {
+    it('상품 판매상태는 필수값이다.', async () => {
       // given
       const body = {
         type: ProductType.HANDMADE.code,
@@ -65,19 +66,18 @@ describe('ProductController (e2e)', () => {
         price: 4000,
       };
 
-      // when // then
-      return request(app.getHttpServer())
-        .post('/products')
-        .send(body)
-        .expect(400)
-        .expect({
-          statusCode: 400,
-          message: ['상품 판매상태는 필수입니다.'],
-          data: null,
-        });
+      // when
+      const response = await getServer(app).post('/products').send(body);
+
+      // then
+      expectResponse(response, 400, {
+        statusCode: 400,
+        message: ['상품 판매상태는 필수입니다.'],
+        data: null,
+      });
     });
 
-    it('상품 이름은 필수값이다.', () => {
+    it('상품 이름은 필수값이다.', async () => {
       // given
       const body = {
         type: ProductType.HANDMADE.code,
@@ -85,19 +85,18 @@ describe('ProductController (e2e)', () => {
         price: 4000,
       };
 
-      // when // then
-      return request(app.getHttpServer())
-        .post('/products')
-        .send(body)
-        .expect(400)
-        .expect({
-          statusCode: 400,
-          message: ['상품 이름은 필수입니다.'],
-          data: null,
-        });
+      // when
+      const response = await getServer(app).post('/products').send(body);
+
+      // then
+      expectResponse(response, 400, {
+        statusCode: 400,
+        message: ['상품 이름은 필수입니다.'],
+        data: null,
+      });
     });
 
-    it('상품 가격은 양수이다.', () => {
+    it('상품 가격은 양수이다.', async () => {
       // given
       const body = {
         type: ProductType.HANDMADE.code,
@@ -106,16 +105,15 @@ describe('ProductController (e2e)', () => {
         price: 0,
       };
 
-      // when // then
-      return request(app.getHttpServer())
-        .post('/products')
-        .send(body)
-        .expect(400)
-        .expect({
-          statusCode: 400,
-          message: ['상품 가격은 양수여야 합니다.'],
-          data: null,
-        });
+      // when
+      const response = await getServer(app).post('/products').send(body);
+
+      // then
+      expectResponse(response, 400, {
+        statusCode: 400,
+        message: ['상품 가격은 양수여야 합니다.'],
+        data: null,
+      });
     });
   });
 
@@ -127,25 +125,29 @@ describe('ProductController (e2e)', () => {
       price: newPrice,
     };
 
-    // when // then
-    const {
-      body: { data },
-      statusCode,
-    } = await request(app.getHttpServer()).patch(`/products/${id}`).send(body);
+    // when
+    const response = await getServer(app).patch(`/products/${id}`).send(body);
 
-    expect(statusCode).toBe(200);
-    expect(data.price).toBe(newPrice);
+    // then
+    expectResponse(response, 200, {
+      data: {
+        price: newPrice,
+      },
+    });
   });
 
-  it('판매 상품을 조회한다', () => {
-    return request(app.getHttpServer())
-      .get('/products/selling')
-      .expect(200)
-      .expect({
-        statusCode: 200,
-        message: '',
-        data: [],
-      });
+  it('판매 상품을 조회한다', async () => {
+    // given
+
+    // when
+    const response = await getServer(app).get('/products/selling');
+
+    // then
+    expectResponse(response, 200, {
+      statusCode: 200,
+      message: '',
+      data: [],
+    });
   });
 });
 
