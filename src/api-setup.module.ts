@@ -11,13 +11,13 @@ import { HttpExceptionConverter } from './entity/interceptor/http-exception-conv
   providers: [
     {
       provide: APP_INTERCEPTOR,
-      useValue: new ControllerInterceptor(new HttpExceptionConverter()),
-    },
-    {
-      provide: APP_INTERCEPTOR,
       inject: [Reflector],
       useFactory: (reflector: Reflector) =>
         new ClassSerializerInterceptor(reflector),
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useValue: new ControllerInterceptor(new HttpExceptionConverter()),
     },
     {
       provide: APP_PIPE,
