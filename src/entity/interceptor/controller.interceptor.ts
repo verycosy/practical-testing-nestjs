@@ -1,22 +1,22 @@
 import {
   CallHandler,
   ExecutionContext,
-  HttpExceptionOptions,
   Injectable,
   NestInterceptor,
-  NotFoundException,
-  UnprocessableEntityException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Observable, catchError, map, throwError } from 'rxjs';
 import { HttpResponse } from 'src/api/http.response';
-import { DomainException } from '../exceptions/domain.exception';
-import { EntityNotFoundError } from 'typeorm';
+import { HttpExceptionConverter } from './http-exception-converter';
 
 @Injectable()
 export class ControllerInterceptor<T>
   implements NestInterceptor<T, HttpResponse<T | null>>
 {
+  constructor(
+    private readonly httpExceptionConverter: HttpExceptionConverter,
+  ) {}
+
   intercept(
     context: ExecutionContext,
     next: CallHandler<T>,
@@ -34,25 +34,7 @@ export class ControllerInterceptor<T>
       ),
       catchError((cause: Error) => {
         return throwError(() => {
-          const { message } = cause;
-          const options: HttpExceptionOptions = {
-            cause,
-          };
-
-          switch (cause.constructor) {
-            case DomainException:
-              return new UnprocessableEntityException(message, options);
-
-            case EntityNotFoundError: {
-              return new NotFoundException(
-                '데이터를 찾을 수 없습니다.',
-                options,
-              );
-            }
-
-            default:
-              return cause;
-          }
+          return this.httpExceptionConverter.convert(cause);
         });
       }),
     );

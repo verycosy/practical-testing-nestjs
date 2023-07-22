@@ -6,6 +6,7 @@ import {
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, Reflector } from '@nestjs/core';
 import { ControllerInterceptor } from './entity/interceptor/controller.interceptor';
 import { AllExceptionFilter } from './entity/filters/all-exception.filter';
+import { HttpExceptionConverter } from './entity/interceptor/http-exception-converter';
 
 @Module({
   providers: [
@@ -15,7 +16,7 @@ import { AllExceptionFilter } from './entity/filters/all-exception.filter';
     },
     {
       provide: APP_INTERCEPTOR,
-      useClass: ControllerInterceptor,
+      useValue: new ControllerInterceptor(new HttpExceptionConverter()),
     },
     {
       provide: APP_INTERCEPTOR,

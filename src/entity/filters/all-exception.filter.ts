@@ -3,7 +3,6 @@ import {
   Catch,
   ExceptionFilter,
   HttpException,
-  HttpStatus,
   Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -15,29 +14,19 @@ interface HttpExceptionResponse {
   statusCode: number;
 }
 
-@Catch()
+// NOTE: ControllerInterceptor로 인해 모든 에러는 HttpException으로 던져짐
+@Catch(HttpException)
 export class AllExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionFilter.name);
 
-  static getStatusCodeAndMessage(err: Error) {
-    if (err instanceof HttpException) {
-      return err.getResponse() as HttpExceptionResponse;
-    }
-
-    return {
-      message: err.message,
-      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-    };
-  }
-
-  catch(exception: Error, host: ArgumentsHost): void {
+  catch(exception: HttpException, host: ArgumentsHost): void {
     this.logger.error(exception, exception.stack);
 
     const context = host.switchToHttp();
     const response = context.getResponse<Response>();
 
     const { statusCode, message } =
-      AllExceptionFilter.getStatusCodeAndMessage(exception);
+      exception.getResponse() as HttpExceptionResponse;
 
     response.status(statusCode).json(
       new HttpResponse({
