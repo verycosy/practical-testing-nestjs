@@ -27,4 +27,28 @@ describe('DateTimeUtil', () => {
     expect(result).toBeInstanceOf(LocalDateTime);
     expect(result.isEqual(localDateTime)).toBe(true);
   });
+
+  it('LocalDate 객체를 yyyy-MM-dd 포맷의 문자열로 변환한다', () => {
+    // given
+    const str = '2023-07-21';
+    const localDate = LocalDate.of(2023, 7, 21);
+
+    // when
+    const result = DateTimeUtil.toString(localDate);
+
+    // then
+    expect(result).toBe(str);
+  });
+
+  it('LocalDateTime 객체를 yyyy-MM-dd HH:mm:ss 포맷의 문자열로 변환한다', () => {
+    // given
+    const str = '2023-07-21 23:05:30';
+    const localDateTime = LocalDateTime.of(2023, 7, 21, 23, 5, 30);
+
+    // when
+    const result = DateTimeUtil.toString(localDateTime);
+
+    // then
+    expect(result).toBe(str);
+  });
 });

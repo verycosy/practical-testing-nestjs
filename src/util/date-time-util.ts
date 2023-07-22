@@ -32,4 +32,14 @@ export class DateTimeUtil {
   static toLocalDateTimeBy(str: string) {
     return LocalDateTime.parse(str, DateTimeUtil.LOCAL_DATE_TIME_FORMATTER);
   }
+
+  static toString(localDate: LocalDate | LocalDateTime): string {
+    const isLocalDateTime = localDate instanceof LocalDateTime;
+
+    return localDate.format(
+      isLocalDateTime
+        ? DateTimeUtil.LOCAL_DATE_TIME_FORMATTER
+        : DateTimeUtil.LOCAL_DATE_FORMATTER,
+    );
+  }
 }
