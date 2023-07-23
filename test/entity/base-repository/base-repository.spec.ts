@@ -80,20 +80,23 @@ describe('BaseRepository', () => {
       await testRepository.save(entities);
 
       // when
-      const [items, totalCount] = await testRepository.findAllBy({
-        sort: [
-          {
-            columnName: 'text',
-            order: 'DESC',
-          },
-        ],
-        pageNo: 1,
-        pageSize: 2,
-      });
+      const { items, totalCount, totalPage, pageSize } =
+        await testRepository.findAllBy({
+          sort: [
+            {
+              columnName: 'text',
+              order: 'DESC',
+            },
+          ],
+          pageNo: 2,
+          pageSize: 2,
+        });
 
       // then
-      expect(items).toEqual(entities.reverse().slice(0, 2));
+      expect(items).toEqual(entities.reverse().slice(2, 4));
       expect(totalCount).toBe(9);
+      expect(totalPage).toBe(5);
+      expect(pageSize).toBe(2);
     });
   });
 });

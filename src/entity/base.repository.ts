@@ -1,5 +1,6 @@
 import { ObjectLiteral, Repository, SelectQueryBuilder } from 'typeorm';
 import { Pageable } from './pagination/pageable';
+import { Page } from './pagination/page';
 
 export class BaseRepository<
   Entity extends ObjectLiteral,
@@ -7,7 +8,7 @@ export class BaseRepository<
   protected async toPaginate(
     queryBuilder: SelectQueryBuilder<Entity>,
     options: Pageable<Entity, keyof Entity>,
-  ) {
+  ): Promise<Page<Entity>> {
     const { sort, pageNo, pageSize } = options;
 
     sort.forEach((sortOption) => {
@@ -15,9 +16,16 @@ export class BaseRepository<
       queryBuilder.addOrderBy(columnName as string, order, nulls);
     });
 
-    return await queryBuilder
+    const [items, totalCount] = await queryBuilder
       .skip((pageNo - 1) * pageSize)
       .take(pageSize)
       .getManyAndCount();
+
+    return {
+      items,
+      pageSize,
+      totalCount,
+      totalPage: Math.ceil(totalCount / pageSize),
+    };
   }
 }
