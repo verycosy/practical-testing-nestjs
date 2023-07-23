@@ -63,5 +63,37 @@ describe('BaseRepository', () => {
       // then
       expect(result).toHaveLength(2);
     });
+
+    it('pagination', async () => {
+      // given
+      const entities = [
+        new TestEntity('A'),
+        new TestEntity('B'),
+        new TestEntity('C'),
+        new TestEntity('D'),
+        new TestEntity('E'),
+        new TestEntity('F'),
+        new TestEntity('G'),
+        new TestEntity('H'),
+        new TestEntity('I'),
+      ];
+      await testRepository.save(entities);
+
+      // when
+      const [items, totalCount] = await testRepository.findAllBy({
+        sort: [
+          {
+            columnName: 'text',
+            order: 'DESC',
+          },
+        ],
+        skip: 0,
+        take: 2,
+      });
+
+      // then
+      expect(items).toEqual(entities.reverse().slice(0, 2));
+      expect(totalCount).toBe(9);
+    });
   });
 });

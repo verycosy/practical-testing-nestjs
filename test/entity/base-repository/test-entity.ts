@@ -1,8 +1,8 @@
 import { Entity, Column } from 'typeorm';
-import { BaseIdEntity } from 'src/entity/base-id-entity';
+import { BaseTimeEntity } from 'src/entity/base-time-entity';
 
 @Entity()
-export class TestEntity extends BaseIdEntity {
+export class TestEntity extends BaseTimeEntity {
   @Column()
   readonly text: string;
 

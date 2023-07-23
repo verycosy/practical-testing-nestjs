@@ -1,5 +1,5 @@
 import { ILike } from 'typeorm';
-import { BaseRepository } from 'src/entity/base.repository';
+import { BaseRepository, Pageable } from 'src/entity/base.repository';
 import { CustomRepository } from 'src/entity/decorators/custom-repository.decorator';
 import { TestEntity } from './test-entity';
 
@@ -11,5 +11,10 @@ export class TestRepository extends BaseRepository<TestEntity> {
         text: ILike(`%${text}%`),
       },
     });
+  }
+
+  async findAllBy(options: Pageable<TestEntity, 'text' | 'createdAt'>) {
+    const queryBuilder = this.createQueryBuilder();
+    return await this.toPaginate(queryBuilder, options);
   }
 }
