@@ -1,36 +1,13 @@
 import { TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Column, DataSource, Entity, ILike } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { createInMemoryTest } from 'test/util/create-in-memory-test';
 import { DBModule } from 'src/db.module';
-import { BaseIdEntity } from 'src/entity/base-id-entity';
-import { CustomRepository } from 'src/entity/decorators/custom-repository.decorator';
-import { BaseRepository as AbstractBaseRepository } from 'src/entity/base.repository';
-
-@Entity()
-class TestEntity extends BaseIdEntity {
-  @Column()
-  readonly text: string;
-
-  constructor(text: string) {
-    super();
-    this.text = text;
-  }
-}
-
-@CustomRepository(TestEntity)
-class BaseRepository extends AbstractBaseRepository<TestEntity> {
-  async findContainsText(text: string) {
-    return await this.find({
-      where: {
-        text: ILike(`%${text}%`),
-      },
-    });
-  }
-}
+import { TestRepository } from './test-repository';
+import { TestEntity } from './test-entity';
 
 describe('BaseRepository', () => {
-  let baseRepository: BaseRepository;
+  let testRepository: TestRepository;
   let module: TestingModule;
 
   beforeAll(async () => {
@@ -38,17 +15,17 @@ describe('BaseRepository', () => {
       imports: [
         DBModule.forRoot({
           useInMemoryDB: true,
-          customRepositories: [BaseRepository],
+          customRepositories: [TestRepository],
         }),
         TypeOrmModule.forFeature([TestEntity]),
       ],
     }).compile();
 
-    baseRepository = module.get(BaseRepository);
+    testRepository = module.get(TestRepository);
   });
 
   afterEach(async () => {
-    await baseRepository.clear();
+    await testRepository.clear();
   });
 
   afterAll(async () => {
@@ -61,7 +38,7 @@ describe('BaseRepository', () => {
       const sample = new TestEntity('hello');
 
       // when
-      const result = await baseRepository.save(sample);
+      const result = await testRepository.save(sample);
 
       // then
       expect(result).toMatchObject({
@@ -69,7 +46,7 @@ describe('BaseRepository', () => {
         text: 'hello',
       });
 
-      const samples = await baseRepository.find();
+      const samples = await testRepository.find();
       expect(samples).toHaveLength(1);
     });
 
@@ -78,10 +55,10 @@ describe('BaseRepository', () => {
       const sample1 = new TestEntity('real sample1');
       const sample2 = new TestEntity('real sample2');
       const sample3 = new TestEntity('fake sample1');
-      await baseRepository.save([sample1, sample2, sample3]);
+      await testRepository.save([sample1, sample2, sample3]);
 
       // when
-      const result = await baseRepository.findContainsText('real');
+      const result = await testRepository.findContainsText('real');
 
       // then
       expect(result).toHaveLength(2);
