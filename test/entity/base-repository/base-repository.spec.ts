@@ -87,8 +87,8 @@ describe('BaseRepository', () => {
             order: 'DESC',
           },
         ],
-        skip: 0,
-        take: 2,
+        pageNo: 1,
+        pageSize: 2,
       });
 
       // then

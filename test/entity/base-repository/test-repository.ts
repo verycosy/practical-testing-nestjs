@@ -1,7 +1,8 @@
 import { ILike } from 'typeorm';
-import { BaseRepository, Pageable } from 'src/entity/base.repository';
+import { BaseRepository } from 'src/entity/base.repository';
 import { CustomRepository } from 'src/entity/decorators/custom-repository.decorator';
 import { TestEntity } from './test-entity';
+import { Pageable } from 'src/entity/pagination/pageable';
 
 @CustomRepository(TestEntity)
 export class TestRepository extends BaseRepository<TestEntity> {
