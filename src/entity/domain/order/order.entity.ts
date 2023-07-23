@@ -10,7 +10,7 @@ import { Product } from '../product/product.entity';
 interface CreateOrderParams {
   products: Product[];
   orderStatus: OrderStatus;
-  registeredDateTime: LocalDateTime;
+  registeredAt: LocalDateTime;
 }
 
 @Entity('orders')
@@ -22,7 +22,7 @@ export class Order extends BaseTimeEntity {
   readonly totalPrice: number;
 
   @LocalDateTimeColumn()
-  readonly registeredDateTime: LocalDateTime;
+  readonly registeredAt: LocalDateTime;
 
   @OneToMany(() => OrderProduct, (orderProduct) => orderProduct.order, {
     cascade: true,
@@ -35,7 +35,7 @@ export class Order extends BaseTimeEntity {
     const {
       products,
       orderStatus,
-      registeredDateTime = LocalDateTime.now(),
+      registeredAt = LocalDateTime.now(),
     } = params;
 
     this.totalPrice = this.calculateTotalPrice(products);
@@ -43,18 +43,18 @@ export class Order extends BaseTimeEntity {
       (product) => new OrderProduct({ order: this, product }),
     );
     this.orderStatus = orderStatus;
-    this.registeredDateTime = registeredDateTime;
+    this.registeredAt = registeredAt;
   }
 
   private calculateTotalPrice(products: Product[]): number {
     return products.reduce((acc, cur) => (acc += cur.price), 0);
   }
 
-  static create(products: Product[], registeredDateTime: LocalDateTime): Order {
+  static create(products: Product[], registeredAt: LocalDateTime): Order {
     return new Order({
       orderStatus: OrderStatus.INIT,
       products,
-      registeredDateTime,
+      registeredAt,
     });
   }
 

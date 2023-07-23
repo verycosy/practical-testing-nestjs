@@ -21,12 +21,12 @@ export class OrderService {
   @Transactional()
   async createOrder(
     productNumbers: string[],
-    registeredDateTime: LocalDateTime,
+    registeredAt: LocalDateTime,
   ): Promise<Order> {
     const products = await this.findProductsBy(productNumbers);
     await this.deductStockQuantities(products);
 
-    const order = Order.create(products, registeredDateTime);
+    const order = Order.create(products, registeredAt);
 
     return await this.orderRepository.save(order);
   }

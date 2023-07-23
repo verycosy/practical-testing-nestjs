@@ -36,12 +36,12 @@ describe('OrderRepository', () => {
     const order1 = new Order({
       products: [product],
       orderStatus,
-      registeredDateTime: LocalDateTime.of(2023, 7, 10, 0, 0, 0),
+      registeredAt: LocalDateTime.of(2023, 7, 10, 0, 0, 0),
     });
     const order2 = new Order({
       products: [product],
       orderStatus,
-      registeredDateTime: LocalDateTime.of(2023, 7, 11, 0, 0, 0),
+      registeredAt: LocalDateTime.of(2023, 7, 11, 0, 0, 0),
     });
     await orderRepository.save([order1, order2]);
 

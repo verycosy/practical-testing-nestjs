@@ -14,7 +14,7 @@ export class OrderRepository extends BaseRepository<Order> {
   ): Promise<Order[]> {
     return await this.find({
       where: {
-        registeredDateTime: And(
+        registeredAt: And(
           MoreThanOrEqual(startDateTime),
           LessThan(endDateTime),
         ),

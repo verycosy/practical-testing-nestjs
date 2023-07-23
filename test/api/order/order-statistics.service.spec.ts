@@ -110,7 +110,7 @@ describe('OrderStatisticsService', () => {
   ) {
     const order = new Order({
       products,
-      registeredDateTime: now,
+      registeredAt: now,
       orderStatus: OrderStatus.PAYMENT_COMPLETED,
     });
 

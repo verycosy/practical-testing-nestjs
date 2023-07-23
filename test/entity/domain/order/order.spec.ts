@@ -30,14 +30,14 @@ describe('Order', () => {
 
   it('주문 생성 시 주문 등록 시간을 기록한다.', () => {
     // given
-    const registeredDateTime = LocalDateTime.now();
+    const registeredAt = LocalDateTime.now();
     const products = [createProduct('001', 1000), createProduct('002', 2000)];
 
     // when
-    const order = Order.create(products, registeredDateTime);
+    const order = Order.create(products, registeredAt);
 
     // then
-    expect(registeredDateTime).toBe(order.registeredDateTime);
+    expect(registeredAt).toBe(order.registeredAt);
   });
 
   function createProduct(productNumber: string, price: number) {

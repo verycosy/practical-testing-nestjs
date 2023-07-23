@@ -14,7 +14,7 @@ export class OrderResponse {
 
   @Transform(({ value }) => DateTimeUtil.toDate(value))
   @ApiProperty({ type: String, format: 'date-time' })
-  readonly registeredDateTime!: LocalDateTime;
+  readonly registeredAt!: LocalDateTime;
 
   @ApiProperty({
     type: [ProductResponse],
@@ -29,7 +29,7 @@ export class OrderResponse {
     return new OrderResponse({
       id: order.id,
       totalPrice: order.totalPrice,
-      registeredDateTime: order.registeredDateTime,
+      registeredAt: order.registeredAt,
       products: order.products.map(ProductResponse.of),
     });
   }

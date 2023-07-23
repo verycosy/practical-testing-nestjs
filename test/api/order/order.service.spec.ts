@@ -26,7 +26,7 @@ describe('OrderService', () => {
 
   it('상품번호 리스트를 받아 주문을 생성한다.', async () => {
     // given
-    const registeredDateTime = LocalDateTime.now();
+    const registeredAt = LocalDateTime.now();
 
     const product1 = createProduct(ProductType.HANDMADE, '001', 1000);
     const product2 = createProduct(ProductType.HANDMADE, '002', 3000);
@@ -36,16 +36,13 @@ describe('OrderService', () => {
     const productNumbers = ['001', '002'];
 
     // when
-    const order = await orderService.createOrder(
-      productNumbers,
-      registeredDateTime,
-    );
+    const order = await orderService.createOrder(productNumbers, registeredAt);
 
     // then
     expect(order).toMatchObject({
       id: expect.any(String),
       totalPrice: 4000,
-      registeredDateTime,
+      registeredAt,
       products: [
         {
           productNumber: '001',
@@ -61,7 +58,7 @@ describe('OrderService', () => {
 
   it('중복되는 상품번호 리스트로 주문을 생성할 수 있다.', async () => {
     // given
-    const registeredDateTime = LocalDateTime.now();
+    const registeredAt = LocalDateTime.now();
 
     const product1 = createProduct(ProductType.HANDMADE, '001', 1000);
     const product2 = createProduct(ProductType.HANDMADE, '002', 3000);
@@ -73,14 +70,14 @@ describe('OrderService', () => {
     // when
     const orderResponse = await orderService.createOrder(
       productNumbers,
-      registeredDateTime,
+      registeredAt,
     );
 
     // then
     expect(orderResponse).toMatchObject({
       id: expect.any(String),
       totalPrice: 2000,
-      registeredDateTime,
+      registeredAt,
       products: [
         {
           productNumber: '001',
@@ -96,7 +93,7 @@ describe('OrderService', () => {
 
   it('재고와 관련된 상품이 포함되어 있는 상품번호 리스트를 받아 주문을 생성한다.', async () => {
     // given
-    const registeredDateTime = LocalDateTime.now();
+    const registeredAt = LocalDateTime.now();
 
     const product1 = createProduct(ProductType.BOTTLE, '001', 1000);
     const product2 = createProduct(ProductType.BAKERY, '002', 3000);
@@ -112,14 +109,14 @@ describe('OrderService', () => {
     // when
     const orderResponse = await orderService.createOrder(
       productNumbers,
-      registeredDateTime,
+      registeredAt,
     );
 
     // then
     expect(orderResponse).toMatchObject({
       id: expect.any(String),
       totalPrice: 10000,
-      registeredDateTime: registeredDateTime,
+      registeredAt,
       products: [
         {
           productNumber: '001',
@@ -156,7 +153,7 @@ describe('OrderService', () => {
 
   it('재고가 부족한 상품으로 주문을 생성하는 경우 예외가 발생한다.', async () => {
     // given
-    const registeredDateTime = LocalDateTime.now();
+    const registeredAt = LocalDateTime.now();
 
     const product1 = createProduct(ProductType.BOTTLE, '001', 1000);
     const product2 = createProduct(ProductType.BAKERY, '002', 3000);
@@ -171,8 +168,7 @@ describe('OrderService', () => {
     const productNumbers = ['001', '001', '002', '003'];
 
     // when
-    const action = () =>
-      orderService.createOrder(productNumbers, registeredDateTime);
+    const action = () => orderService.createOrder(productNumbers, registeredAt);
 
     // then
     await expect(action).rejects.toThrowError(
