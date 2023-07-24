@@ -6,7 +6,10 @@ export const createInMemoryTest = (metadata: ModuleMetadata) => {
   const { imports = [], providers, controllers, exports } = metadata;
 
   return Test.createTestingModule({
-    imports: [CoreModule.forRoot({ useInMemoryDB: true }), ...imports],
+    imports: [
+      CoreModule.forRoot({ useInMemoryDB: true, useRedis: false }),
+      ...imports,
+    ],
     providers,
     controllers,
     exports,
